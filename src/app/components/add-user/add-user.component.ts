@@ -13,6 +13,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class AddUserComponent implements OnInit{
   
+  emailUsed: any;
   userdataform= new FormGroup(
       {
         
@@ -40,7 +41,9 @@ export class AddUserComponent implements OnInit{
   }
  
   ngOnInit(): void {
-    
+    this.userdataform.get('email')?.valueChanges.subscribe(() => {
+      this.emailUsed = null;  // Clear the error message
+    });
   }
 
   register() {
@@ -61,7 +64,11 @@ export class AddUserComponent implements OnInit{
         });
       },
       error: (error) => {
-        console.log("User creation failed:", error);
+        if (error.error && error.error.message) {
+          this.emailUsed= "Email is already in use";
+        } else {
+          alert('An unknown error occurred during user creation.');
+        }
       }
     });
   }

@@ -1,43 +1,48 @@
 <div class="row">
     <div class="col-md-4 mt-5 mx-auto">
-    <form [formGroup]="userdataform" (ngSubmit)="register()">
-        <div class="form-group mb-3">
-            <label for="fullname">Full Name</label>
-            <input formControlName="fullname" type="text" class="form-control" id="fullname">
-            <div *ngIf="userdataform.get('fullname')?.invalid && (userdataform.get('fullname')?.touched || userdataform.get('fullname')?.dirty)">
-                <div *ngIf="userdataform.get('fullname')?.getError('required')" class="text-primary">
-                    This field is Required!
+        <form [formGroup]="userdataform" (ngSubmit)="register()">
+            <div class="form-group mb-3">
+                <label for="fullname">Full Name</label>
+                <input formControlName="fullname" type="text" class="form-control" id="fullname">
+                <div *ngIf="userdataform.get('fullname')?.invalid && (userdataform.get('fullname')?.touched || userdataform.get('fullname')?.dirty)">
+                    <div *ngIf="userdataform.get('fullname')?.getError('required')" class="text-primary">
+                        This field is Required!
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="form-group mb-3">
-            <label for="email">Email</label>
-            <input formControlName="email" type="text" class="form-control" id="email">
-            <div *ngIf="userdataform.get('email')?.invalid && (userdataform.get('email')?.touched || userdataform.get('email')?.dirty)">
-                <div *ngIf="userdataform.get('email')?.getError('required')" class="text-primary">
-                    This field is Required!
+            
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <input formControlName="email" type="text" class="form-control" id="email">
+                <div *ngIf="userdataform.get('email')?.invalid && (userdataform.get('email')?.touched || userdataform.get('email')?.dirty)">
+                    <div *ngIf="userdataform.get('email')?.getError('required')" class="text-primary">
+                        This field is Required!
+                    </div>
+                    <div *ngIf="userdataform.get('email')?.getError('email')" class="text-primary">
+                        This field should be an email address!
+                    </div>
                 </div>
-                <div *ngIf="userdataform.get('email')?.getError('email')" class="text-primary">
-                    This field should be email address !!
-                </div>
-            </div>
-        </div>
 
-        <div class="form-group mb-3">
-            <label for="password">Password</label>
-            <input formControlName="password" type="password" class="form-control" id="password">
-            <div *ngIf="userdataform.get('password')?.invalid && (userdataform.get('password')?.touched || userdataform.get('password')?.dirty)">
-              <div *ngIf="userdataform.get('password')?.getError('required')" class="text-primary">
-                This field is Required!
-              </div>
-              <div *ngIf="userdataform.get('password')?.getError('minlength')" class="text-primary">
-                This field should be at least 8 characters!
-              </div>
+                <!-- Show custom error message if email is already used -->
+                <div *ngIf="emailUsed" class="text-danger mt-2">
+                    {{ emailUsed }}
+                </div>
             </div>
-          </div>
-          
-        <button [disabled]="userdataform.invalid" class="btn btn-block btn-primary col-12" >Register</button>
-    </form>
-</div>
+
+            <div class="form-group mb-3">
+                <label for="password">Password</label>
+                <input formControlName="password" type="password" class="form-control" id="password">
+                <div *ngIf="userdataform.get('password')?.invalid && (userdataform.get('password')?.touched || userdataform.get('password')?.dirty)">
+                    <div *ngIf="userdataform.get('password')?.getError('required')" class="text-primary">
+                        This field is Required!
+                    </div>
+                    <div *ngIf="userdataform.get('password')?.getError('minlength')" class="text-primary">
+                        This field should be at least 8 characters!
+                    </div>
+                </div>
+            </div>
+
+            <button [disabled]="userdataform.invalid" class="btn btn-block btn-primary col-12">Register</button>
+        </form>
+    </div>
 </div>
