@@ -1,0 +1,33 @@
+<div class="container mt-4">
+    <p>list-user works!</p>
+  
+    <!-- Pagination -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Roles</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 5, currentPage: page }">
+          <td>{{ user.id }}</td>
+          <td>{{ user.fullname }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <ul>
+              <li *ngFor="let role of user.appRoles">{{ role.roleName }}</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+  </div>
+  

@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/users">AppTmp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul *ngIf="currentUser" class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/users">Home
+            <span class="visually-hidden">(current)</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/users">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/roles">Roles</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/users/createUser">Add user</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/roles/createRole">Add role</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        <li *ngIf="!currentUser" class="nav-item">
+          <a routerLink="/login" class="nav-link">
+            Login
+          </a>
+        </li>
+        <li *ngIf="!currentUser" class="nav-item">
+          <a routerLink="/createUser" class="nav-link">
+            Register
+          </a>
+        </li>
+        <li *ngIf="currentUser" class="nav-item dropstart">
+          <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+            aria-expanded="false">Profile</button>
+          <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start bg-primary mt-5">
+            <div class="dropdown-item d-flex justify-content-between">
+              <span>{{currentUser['sub']}} </span>
+              <span class="badge bg-success mx-2">On line</span>
+            </div>
+            <a class="dropdown-item" routerLink="/profile">Profile</a>
+            <div class="dropdown-divider"></div>
+            <Button (click)="logOut()" class="dropdown-item">
+              <i class="bi bi-box-arrow-left"></i> LogOut
+            </Button>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</nav>
