@@ -1,6 +1,7 @@
 import { UserService } from './../../services/user.service';
 import { Component, OnInit } from '@angular/core';
 
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 @Component({
   selector: 'app-list-user',
   templateUrl: './list-user.component.html',
@@ -12,7 +13,8 @@ export class ListUserComponent implements OnInit{
   page: number = 1;
 
   constructor(
-    private userService:UserService
+    private userService:UserService,
+    public _sanitizer: DomSanitizer
   ){
 
   }
@@ -22,6 +24,10 @@ export class ListUserComponent implements OnInit{
     this.userService.getUsers().subscribe(res=>{
       this.listUsers = res;
     })
+  }
+
+  decode(base64String: string): SafeResourceUrl {
+    return this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,' + base64String);
   }
 
 }

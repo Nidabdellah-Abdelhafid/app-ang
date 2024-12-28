@@ -14,7 +14,7 @@ export class UserService implements OnInit{
     
   }
 
-  addUser(data:User){
+  addUser(data:FormData){
     return this.http.post(`${environment.apiUrl}/users/createUser`, data);
   }
 

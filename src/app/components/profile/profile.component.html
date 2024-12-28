@@ -1,19 +1,29 @@
 <div class="card mb-3 mt-5">
-    <div class="row g-0">
-      <div class="col-md-4">
-        <img src="https://img.freepik.com/photos-gratuite/rendu-3d-personnage-dessin-anime-lunettes-veste_1142-51310.jpg?t=st=1735226402~exp=1735230002~hmac=f71e723bd522924a9fb47eb9fda191b71efd4cebaf7204d05f5b7e4a865f33f1&w=740" class="img-fluid rounded-start" height="auto" alt="User Image">
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">{{authUser?.fullname}}</h5>
-          <p class="card-text">{{authUser?.email}}</p>
-          <ul class="list-group">
-            <li class="list-group-item active" aria-current="true">Roles</li>
-            <li class="list-group-item" *ngFor="let role of authUser?.appRoles">{{role.roleName}}</li>
-          </ul>
-          <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-        </div>
+  <div class="row g-0">
+    <div class="col-md-4">
+      <!-- Check if user photo exists and display it -->
+      <img *ngIf="authUser?.userPhoto" 
+           [src]="decode(authUser?.userPhoto)"
+           class="img-fluid rounded-start" 
+           height="auto" 
+           alt="User Image">
+      <!-- Fallback image in case user photo is not available -->
+      <img *ngIf="!authUser?.userPhoto" 
+           src="https://img.freepik.com/photos-gratuite/rendu-3d-personnage-dessin-anime-lunettes-veste_1142-51310.jpg?t=st=1735226402~exp=1735230002~hmac=f71e723bd522924a9fb47eb9fda191b71efd4cebaf7204d05f5b7e4a865f33f1&w=740" 
+           class="img-fluid rounded-start" 
+           height="auto" 
+           alt="User Image">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{authUser?.fullname}}</h5>
+        <p class="card-text">{{authUser?.email}}</p>
+        <ul class="list-group">
+          <li class="list-group-item active" aria-current="true">Roles</li>
+          <li class="list-group-item" *ngFor="let role of authUser?.appRoles">{{role.roleName}}</li>
+        </ul>
+        <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
       </div>
     </div>
   </div>
-  
+</div>

@@ -11,35 +11,35 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   templateUrl: './add-user.component.html',
   styleUrls: ['./add-user.component.css']
 })
-export class AddUserComponent implements OnInit{
+export class AddUserComponent implements OnInit {
   
   emailUsed: any;
-  userdataform= new FormGroup(
-      {
-        
-        fullname: new FormControl('', [
-          Validators.required,
-        ]),
-        email: new FormControl('', [
-          Validators.required,
-          Validators.email
-        ]),
-        password: new FormControl('', [
-          Validators.required,
-          Validators.minLength(8),
-        ]),
-      }
+  userPhoto: File | null = null;
+  filePreview: string | null = null; // To display image preview
+  fileError: string | null = null;
+  
+  userdataform = new FormGroup({
+    fullname: new FormControl('', [
+      Validators.required,
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+    ]),
+    userPhoto: new FormControl(null,
+      Validators.required
     )
+  });
 
   constructor(
-    private userService:UserService,
-    private jwtTokenService:JwtTokenService ,
-     private router:Router,
-    private accountService:AccountService
-  ){
+    private userService: UserService,
+    private router: Router,
+  ) {}
 
-  }
- 
   ngOnInit(): void {
     this.userdataform.get('email')?.valueChanges.subscribe(() => {
       this.emailUsed = null;  // Clear the error message
@@ -48,12 +48,21 @@ export class AddUserComponent implements OnInit{
 
   register() {
     const formValue = this.userdataform.value as User;
-    this.userService.addUser(formValue).subscribe({
+    const formData = new FormData();
+    
+    formData.append('fullname', formValue.fullname);
+    formData.append('email', formValue.email);
+    formData.append('password', formValue.password);
+
+    if (this.userPhoto) {
+      formData.append('userPhoto', this.userPhoto, this.userPhoto.name);
+    }
+  
+    this.userService.addUser(formData).subscribe({
       next: (res) => {
-        
         this.userService.addRoleToUser({
           email: formValue.email,
-          roleName: "USER"
+          roleName: 'USER'
         }).subscribe({
           next: (roleRes) => {
             this.handleResponse();  
@@ -65,7 +74,7 @@ export class AddUserComponent implements OnInit{
       },
       error: (error) => {
         if (error.error && error.error.message) {
-          this.emailUsed= "Email is already in use";
+          this.emailUsed = 'Email is already in use';
         } else {
           alert('An unknown error occurred during user creation.');
         }
@@ -73,10 +82,49 @@ export class AddUserComponent implements OnInit{
     });
   }
   
+  
 
-  handleResponse(){
-    this.router.navigateByUrl("/login");
+  
+
+  handleResponse() {
+    this.router.navigateByUrl('/login');
   }
 
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
 
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      const maxSize = 2 * 1024 * 1024; // Max size 2MB
+
+      if (!allowedTypes.includes(file.type)) {
+        this.fileError = 'Only JPG, JPEG, and PNG files are allowed.';
+        this.userdataform.get('userPhoto')?.reset();
+        this.filePreview = null;
+        return;
+      }
+
+      if (file.size > maxSize) {
+        this.fileError = 'File size must be less than 2MB.';
+        this.userdataform.get('userPhoto')?.reset();
+        this.filePreview = null;
+        return;
+      }
+
+      // Clear previous file errors
+      this.fileError = null;
+
+      // Show image preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.filePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+ 
+      this.userPhoto = file;  
+    }
+  }
+  
+  
+  
 }

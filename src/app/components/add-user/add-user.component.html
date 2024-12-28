@@ -23,8 +23,7 @@
                     </div>
                 </div>
 
-                <!-- Show custom error message if email is already used -->
-                <div *ngIf="emailUsed" class="text-danger mt-2">
+               <div *ngIf="emailUsed" class="text-danger mt-2">
                     {{ emailUsed }}
                 </div>
             </div>
@@ -41,6 +40,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="form-group mb-3">
+                <label for="userPhoto">User Photo</label>
+                <input formControlName="userPhoto" type="file" class="form-control" id="userPhoto" (change)="onFileChange($event)">
+                <div *ngIf="fileError" class="text-danger mt-2">
+                    {{ fileError }}
+                </div>
+                <div *ngIf="userdataform.get('userPhoto')?.invalid && (userdataform.get('userPhoto')?.touched || userdataform.get('userPhoto')?.dirty)">
+                  
+                    <div *ngIf="userdataform.get('userPhoto')?.getError('required')" class="text-primary">
+                    This field is Required!
+                  </div>
+                </div>
+              </div>
+              
+              
+            
 
             <button [disabled]="userdataform.invalid" class="btn btn-block btn-primary col-12">Register</button>
         </form>

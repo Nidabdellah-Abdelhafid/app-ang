@@ -6,6 +6,7 @@
       <thead>
         <tr>
           <th>ID</th>
+          <th>Photo</th>
           <th>Full Name</th>
           <th>Email</th>
           <th>Roles</th>
@@ -14,6 +15,13 @@
       <tbody>
         <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 5, currentPage: page }">
           <td>{{ user.id }}</td>
+          <td>
+            <img *ngIf="user?.userPhoto" 
+           [src]="decode(user?.userPhoto)"
+           class="img-fluid rounded-circle w-25 h-25" 
+           
+           alt="User Image">
+          </td>
           <td>{{ user.fullname }}</td>
           <td>{{ user.email }}</td>
           <td>
