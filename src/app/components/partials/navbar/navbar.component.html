@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/users">AppTmp</a>
+    <a class="navbar-brand" routerLink="/home">AppTmp</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
       aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -8,18 +8,51 @@
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul *ngIf="currentUser" class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" routerLink="/users">Home
+          <a class="nav-link active" routerLink="/home">Home
             <span class="visually-hidden">(current)</span>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="isAdmin">
           <a class="nav-link" routerLink="/users">Users</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="isAdmin">
           <a class="nav-link" routerLink="/roles">Roles</a>
         </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a class="nav-link" routerLink="/paiements">Paiements</a>
+        </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/roles/createRole">Add role</a>
+          <a class="nav-link" routerLink="/badges">Badges</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a class="nav-link" routerLink="/factures">factures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/messages">messages</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/notifications">notifications</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/offres">Offres</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/pays">Country</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/photos">Photos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/planings">Planings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/programmes">Programmes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reservations">Reservations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/themes">Themes</a>
         </li>
       </ul>
 
@@ -50,7 +83,6 @@
           </div>
         </li>
       </ul>
-
     </div>
   </div>
 </nav>

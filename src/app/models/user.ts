@@ -3,4 +3,7 @@ export interface User {
     email: string;
     password :string;
     userPhoto: ArrayBuffer | null;
+    telephone: string;
+    pays: string;
+
 }

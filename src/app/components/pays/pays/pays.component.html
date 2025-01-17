@@ -1,0 +1,161 @@
+<div class="container mt-4">
+    <p>List of Countries</p>
+
+    <!-- Add New Country Button -->
+    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New
+        Country</button>
+
+    <!-- Country List Table -->
+
+    <table class="table table-striped ">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Label</th>
+                <th>Description</th>
+                <th>Continent</th>
+                <th>Reviews</th>
+                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let pays of listPays | paginate: { itemsPerPage: 5, currentPage: page }">
+                <td>{{ pays.id }}</td>
+                <td><img [src]="pays.image" alt="Offer Image" width="150" height="150"></td>
+                <td>{{ pays.label }}</td>
+                <td>
+                    <div>
+                        {{ pays.description }}
+                    </div>
+
+                </td>
+                <td>{{ pays.continent }}</td>
+                <td>{{ pays.reviews }}</td>
+                <td *ngIf="isAdmin">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a class="btn btn-outline-info btn-sm" (click)="showPays(pays)"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" (click)="editPays(pays)"><i
+                                class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-outline-primary btn-sm" (click)="deletePays(pays)"><i
+                                class="bi bi-trash"></i></a>
+                    </div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+
+    <!-- Modal for Add/Edit Country -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ paysForm.value.id ? 'Edit' : 'Add' }} Country</h5>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="paysForm" (ngSubmit)="submitForm()">
+                        <div class="form-group mb-3">
+                            <label for="label" class="mb-2">Label</label>
+                            <input formControlName="label" type="text" class="form-control" id="label"
+                                placeholder="Enter country label">
+                            <div
+                                *ngIf="paysForm.get('label')?.invalid && (paysForm.get('label')?.touched || paysForm.get('label')?.dirty)">
+                                <div *ngIf="paysForm.get('label')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="image" class="mb-2">Image</label>
+                            <input formControlName="image" type="text" class="form-control" id="image"
+                                placeholder="Enter country image">
+                            <div
+                                *ngIf="paysForm.get('image')?.invalid && (paysForm.get('image')?.touched || paysForm.get('image')?.dirty)">
+                                <div *ngIf="paysForm.get('image')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description" class="mb-2">Description</label>
+                            <textarea formControlName="description" class="form-control" id="description"
+                                placeholder="Enter country description"></textarea>
+                            <div
+                                *ngIf="paysForm.get('description')?.invalid && (paysForm.get('description')?.touched || paysForm.get('description')?.dirty)">
+                                <div *ngIf="paysForm.get('description')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="continent" class="mb-2">Continent</label>
+                            <input formControlName="continent" type="text" class="form-control" id="continent"
+                                placeholder="Enter continent">
+                            <div
+                                *ngIf="paysForm.get('continent')?.invalid && (paysForm.get('continent')?.touched || paysForm.get('continent')?.dirty)">
+                                <div *ngIf="paysForm.get('continent')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="latitude" class="mb-2">Latitude</label>
+                            <input formControlName="latitude" type="number" class="form-control" id="latitude"
+                                placeholder="Enter latitude">
+                            <div
+                                *ngIf="paysForm.get('latitude')?.invalid && (paysForm.get('latitude')?.touched || paysForm.get('latitude')?.dirty)">
+                                <div *ngIf="paysForm.get('latitude')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="longitude" class="mb-2">Longitude</label>
+                            <input formControlName="longitude" type="number" class="form-control" id="longitude"
+                                placeholder="Enter longitude">
+                            <div
+                                *ngIf="paysForm.get('longitude')?.invalid && (paysForm.get('longitude')?.touched || paysForm.get('longitude')?.dirty)">
+                                <div *ngIf="paysForm.get('longitude')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="reviews" class="mb-2">Reviews</label>
+                            <input formControlName="reviews" type="number" class="form-control" id="reviews"
+                                placeholder="Enter number of reviews">
+                            <div
+                                *ngIf="paysForm.get('reviews')?.invalid && (paysForm.get('reviews')?.touched || paysForm.get('reviews')?.dirty)">
+                                <div *ngIf="paysForm.get('reviews')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="paysForm.invalid" class="btn btn-primary">
+                                {{ paysForm.value.id ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="clearInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

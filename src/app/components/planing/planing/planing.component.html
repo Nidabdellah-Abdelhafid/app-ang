@@ -1,0 +1,110 @@
+<div class="container mt-4">
+    <p>List of Planings</p>
+
+    <!-- Add New Planing Button -->
+    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Planing</button>
+
+    <!-- Planing List Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Label</th>
+                <th>Description</th>
+                <th>Jour Numero</th>
+                <th>Offer</th>
+                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let planing of listPlaning | paginate: { itemsPerPage: 5, currentPage: page }">
+                <td>{{ planing.id }}</td>
+                <td>{{ planing.label }}</td>
+                <td>{{ planing.description }}</td>
+                <td>{{ planing.jourNumero }}</td>
+                <td>
+                    <div *ngIf="planing.offre">
+                        {{ planing?.offre['label'] }}
+                    </div>
+                </td>
+                <td *ngIf="isAdmin">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a class="btn btn-outline-info btn-sm" (click)="showPlaning(planing)"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" (click)="editPlaning(planing)"><i class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-outline-danger btn-sm" (click)="deletePlaning(planing)"><i class="bi bi-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+
+    <!-- Modal for Add/Edit Planing -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ planingForm.value.id ? 'Edit' : 'Add' }} Planing</h5>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="planingForm" (ngSubmit)="submitForm()">
+                        <div class="form-group mb-3">
+                            <label for="label" class="mb-2">Label</label>
+                            <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter planing label">
+                            <div *ngIf="planingForm.get('label')?.invalid && (planingForm.get('label')?.touched || planingForm.get('label')?.dirty)">
+                                <div *ngIf="planingForm.get('label')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description" class="mb-2">Description</label>
+                            <textarea formControlName="description" class="form-control" id="description" placeholder="Enter planing description"></textarea>
+                            <div *ngIf="planingForm.get('description')?.invalid && (planingForm.get('description')?.touched || planingForm.get('description')?.dirty)">
+                                <div *ngIf="planingForm.get('description')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="jourNumero" class="mb-2">Jour Numero</label>
+                            <input formControlName="jourNumero" type="number" class="form-control" id="jourNumero" placeholder="Enter jour numero">
+                            <div *ngIf="planingForm.get('jourNumero')?.invalid && (planingForm.get('jourNumero')?.touched || planingForm.get('jourNumero')?.dirty)">
+                                <div *ngIf="planingForm.get('jourNumero')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="offre" class="mb-2">Offer</label>
+                            <select formControlName="offre" id="offre" class="form-control">
+                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
+                            </select>
+                            <div *ngIf="planingForm.get('offre')?.invalid && (planingForm.get('offre')?.touched || planingForm.get('offre')?.dirty)">
+                                <div *ngIf="planingForm.get('offre')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="planingForm.invalid" class="btn btn-primary">
+                                {{ planingForm.value.id ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

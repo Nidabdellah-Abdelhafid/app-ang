@@ -1,0 +1,266 @@
+<div class="container mt-4">
+    <p>List of Photos</p>
+
+    <!-- Add New Photo Button -->
+    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New
+        Photo</button>
+
+    <!-- Photo List Table -->
+    <table class="table table-striped ">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>URL</th>
+                <th>Pays</th>
+                <th>Planning</th>
+                <th>Program</th>
+                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let photo of listPhoto | paginate: { itemsPerPage: 6, currentPage: page }">
+                <td>{{ photo.id }}</td>
+                <td><img [src]="photo.url" alt="Photo" width="80" height="80"></td>
+                <td>
+                    <div *ngIf="photo.pays">
+                        {{ photo?.pays['label'] }}
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="photo.planing">
+                        {{ photo?.planing['label'] }}
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="photo.programme">
+                        {{ photo?.programme['heure'] }}
+                    </div>
+                </td>
+                <td *ngIf="isAdmin">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a class="btn btn-outline-info btn-sm" (click)="showPhoto(photo)"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" (click)="editPhoto(photo)"><i
+                                class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-outline-primary btn-sm" (click)="deletePhoto(photo)"><i
+                                class="bi bi-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+
+    <!-- Modal for Add/Edit Photo -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ photoForm.value.id ? 'Edit' : 'Add' }} Photo</h5>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#photo" aria-selected="true"
+                                role="tab">Photo of
+                                Pays</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#planing1" aria-selected="false" role="tab"
+                                tabindex="-1">Photo
+                                of Planing</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#programme1" aria-selected="false" role="tab"
+                                tabindex="-1">Photo
+                                of Programme</a>
+                        </li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content mt-4">
+                        <div class="tab-pane fade active show" id="photo" role="tabpanel">
+                            <form [formGroup]="photoForm" (ngSubmit)="submitForm()">
+                                <!-- Form fields for photo details -->
+                                <div class="form-group mb-3">
+                                    <label for="url" class="mb-2">URL</label>
+                                    <input formControlName="url" type="text" class="form-control" id="url"
+                                        placeholder="Enter photo URL">
+                                    <div
+                                        *ngIf="photoForm.get('url')?.invalid && (photoForm.get('url')?.touched || photoForm.get('url')?.dirty)">
+                                        <div *ngIf="photoForm.get('url')?.getError('required')" class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="pays" class="mb-2">Pays</label>
+                                    <select formControlName="pays" id="pays" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let pays of listPays" [ngValue]="pays">{{pays.label}}</option>
+                                    </select>
+                                    <div
+                                        *ngIf="photoForm.get('pays')?.invalid && (photoForm.get('pays')?.touched || photoForm.get('pays')?.dirty)">
+                                        <div *ngIf="photoForm.get('pays')?.getError('required')" class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="planing" class="mb-2">Planning</label>
+                                    <select formControlName="planing" id="planing" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let planing of listPlaning" [ngValue]="planing">
+                                            {{planing.label}}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="programme" class="mb-2">Programme</label>
+                                    <select formControlName="programme" id="programme" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let programme of listProgramme" [ngValue]="programme">
+                                            {{programme.heure}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="modal-footer mt-5">
+                                    <button [disabled]="photoForm.invalid" class="btn btn-primary">
+                                        {{ photoForm.value.id ? 'Update' : 'Save' }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                        (click)="clearInput()">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="planing1" role="tabpanel">
+                            <form [formGroup]="photoFormPlaning" (ngSubmit)="submitForm()">
+                                <!-- Form fields for photo details -->
+                                <div class="form-group mb-3">
+                                    <label for="url" class="mb-2">URL</label>
+                                    <input formControlName="url" type="text" class="form-control" id="url"
+                                        placeholder="Enter photo URL">
+                                    <div
+                                        *ngIf="photoFormPlaning.get('url')?.invalid && (photoFormPlaning.get('url')?.touched || photoFormPlaning.get('url')?.dirty)">
+                                        <div *ngIf="photoFormPlaning.get('url')?.getError('required')"
+                                            class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="pays" class="mb-2">Pays</label>
+                                    <select formControlName="pays" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let pays of listPays" [ngValue]="pays">{{pays.label}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="planing" class="mb-2">Planning</label>
+                                    <select formControlName="planing" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let planing of listPlaning" [ngValue]="planing">
+                                            {{planing.label}}
+                                        </option>
+                                    </select>
+                                    <div
+                                        *ngIf="photoFormPlaning.get('planing')?.invalid && (photoFormPlaning.get('planing')?.touched || photoFormPlaning.get('planing')?.dirty)">
+                                        <div *ngIf="photoFormPlaning.get('planing')?.getError('required')"
+                                            class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="programme" class="mb-2">Programme</label>
+                                    <select formControlName="programme" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let programme of listProgramme" [ngValue]="programme">
+                                            {{programme.heure}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="modal-footer mt-5">
+                                    <button [disabled]="photoFormPlaning.invalid" class="btn btn-primary">
+                                        {{ photoFormPlaning.value.id ? 'Update' : 'Save' }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                        (click)="clearInput()">Close</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="programme1" role="tabpanel">
+                            <form [formGroup]="photoFormProgramme" (ngSubmit)="submitForm()">
+                                <!-- Form fields for photo details -->
+                                <div class="form-group mb-3">
+                                    <label for="url" class="mb-2">URL</label>
+                                    <input formControlName="url" type="text" class="form-control" id="url"
+                                        placeholder="Enter photo URL">
+                                    <div
+                                        *ngIf="photoFormProgramme.get('url')?.invalid && (photoFormProgramme.get('url')?.touched || photoFormProgramme.get('url')?.dirty)">
+                                        <div *ngIf="photoFormProgramme.get('url')?.getError('required')"
+                                            class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="pays" class="mb-2">Pays</label>
+                                    <select formControlName="pays" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let pays of listPays" [ngValue]="pays">{{pays.label}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label for="planing" class="mb-2">Planning</label>
+                                    <select formControlName="planing" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let planing of listPlaning" [ngValue]="planing">
+                                            {{planing.label}}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="programme" class="mb-2">Programme</label>
+                                    <select formControlName="programme" class="form-control" title="dd" name="dd">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let programme of listProgramme" [ngValue]="programme">
+                                            {{programme.heure}}</option>
+                                    </select>
+                                    <div
+                                        *ngIf="photoFormProgramme.get('programme')?.invalid && (photoFormProgramme.get('programme')?.touched || photoFormProgramme.get('programme')?.dirty)">
+                                        <div *ngIf="photoFormProgramme.get('programme')?.getError('required')"
+                                            class="text-primary">
+                                            This field is Required!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer mt-5">
+                                    <button [disabled]="photoFormProgramme.invalid" class="btn btn-primary">
+                                        {{ photoFormProgramme.value.id ? 'Update' : 'Save' }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                        (click)="clearInput()">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

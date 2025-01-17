@@ -1,10 +1,11 @@
 import { Router } from '@angular/router';
-import { AccountService } from './../../services/account.service';
+import { AccountService } from '../../services/account.service';
 import { JwtTokenService } from './../../services/jwt-token.service';
 import { User } from 'src/app/models/user';
 import { UserService } from './../../services/user.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-user',
@@ -32,7 +33,13 @@ export class AddUserComponent implements OnInit {
     ]),
     userPhoto: new FormControl(null,
       Validators.required
-    )
+    ),
+    telephone: new FormControl('', [
+      Validators.required
+    ]),
+    pays: new FormControl('', [
+      Validators.required
+    ]),
   });
 
   constructor(
@@ -42,7 +49,7 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.userdataform.get('email')?.valueChanges.subscribe(() => {
-      this.emailUsed = null;  // Clear the error message
+      this.emailUsed = null; 
     });
   }
 
@@ -53,6 +60,8 @@ export class AddUserComponent implements OnInit {
     formData.append('fullname', formValue.fullname);
     formData.append('email', formValue.email);
     formData.append('password', formValue.password);
+    formData.append('telephone', formValue.telephone);
+    formData.append('pays', formValue.pays);
 
     if (this.userPhoto) {
       formData.append('userPhoto', this.userPhoto, this.userPhoto.name);
@@ -65,6 +74,13 @@ export class AddUserComponent implements OnInit {
           roleName: 'USER'
         }).subscribe({
           next: (roleRes) => {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Badge created successfully!",
+                showConfirmButton: false,
+                timer: 1500
+              });
             this.handleResponse();  
           },
           error: (roleError) => {
@@ -83,9 +99,6 @@ export class AddUserComponent implements OnInit {
   }
   
   
-
-  
-
   handleResponse() {
     this.router.navigateByUrl('/login');
   }
@@ -111,10 +124,8 @@ export class AddUserComponent implements OnInit {
         return;
       }
 
-      // Clear previous file errors
       this.fileError = null;
 
-      // Show image preview
       const reader = new FileReader();
       reader.onload = () => {
         this.filePreview = reader.result as string;

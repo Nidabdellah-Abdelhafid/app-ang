@@ -1,0 +1,111 @@
+<div class="container mt-4">
+    <p>List of Programmes</p>
+  
+    <!-- Add New Programme Button {{listProgrammeWidhDetails | json}} -->
+    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Programme</button>
+  
+    <!-- Programme List Table -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Label</th>
+          <th>Description</th>
+          <th>Heure</th>
+          <th>Planing</th>
+          <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let programme of listProgramme | paginate: { itemsPerPage: 5, currentPage: page }">
+          <td>{{ programme.id }}</td>
+          <td>{{ programme.label }}</td>
+          <td>{{ programme.description }}</td>
+          <td>{{ programme.heure }}</td>
+          <td>
+            <div *ngIf="programme.planing_programmes">
+                {{ programme.planing_programmes['label'] }}
+            </div>
+        </td>
+          <td *ngIf="isAdmin">
+            <div class="d-flex align-items-center justify-content-center" >
+              <a class="btn btn-outline-info btn-sm" (click)="showProgramme(programme)"><i class="bi bi-eye"></i></a>
+              <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="editProgramme(programme)">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a class="btn btn-outline-danger btn-sm" (click)="deleteProgramme(programme)"><i class="bi bi-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+  
+    <!-- Modal for Add/Edit Programme -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ programmeForm.value.id ? 'Edit' : 'Add' }} Programme</h5>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="programmeForm" (ngSubmit)="submitForm()">
+              <div class="form-group mb-3">
+                <label for="label" class="mb-2">Label</label>
+                <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter programme label">
+                <div *ngIf="programmeForm.get('label')?.invalid && (programmeForm.get('label')?.touched || programmeForm.get('label')?.dirty)">
+                  <div *ngIf="programmeForm.get('label')?.getError('required')" class="text-danger">
+                    This field is Required!
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group mb-3">
+                <label for="description" class="mb-2">Description</label>
+                <textarea formControlName="description" class="form-control" id="description" placeholder="Enter programme description"></textarea>
+                <div *ngIf="programmeForm.get('description')?.invalid && (programmeForm.get('description')?.touched || programmeForm.get('description')?.dirty)">
+                  <div *ngIf="programmeForm.get('description')?.getError('required')" class="text-danger">
+                    This field is Required!
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group mb-3">
+                <label for="heure" class="mb-2">Heure</label>
+                <input formControlName="heure" type="text" class="form-control" id="heure" placeholder="Enter heure">
+                <div *ngIf="programmeForm.get('heure')?.invalid && (programmeForm.get('heure')?.touched || programmeForm.get('heure')?.dirty)">
+                  <div *ngIf="programmeForm.get('heure')?.getError('required')" class="text-danger">
+                    This field is Required!
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group mb-3">
+                <label for="planing_programmes" class="mb-2">Planing</label>
+                <select formControlName="planing_programmes" id="planing_programmes" class="form-control">
+                  <option *ngFor="let planing of listPlaning" [ngValue]="planing">{{ planing.label }}</option>
+                </select>
+                <div *ngIf="programmeForm.get('planing_programmes')?.invalid && (programmeForm.get('planing_programmes')?.touched || programmeForm.get('planing_programmes')?.dirty)">
+                  <div *ngIf="programmeForm.get('planing_programmes')?.getError('required')" class="text-danger">
+                    This field is Required!
+                  </div>
+                </div>
+              </div>
+  
+              <div class="modal-footer mt-5">
+                <button [disabled]="programmeForm.invalid" class="btn btn-primary">
+                  {{ programmeForm.value.id ? 'Update' : 'Save' }}
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

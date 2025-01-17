@@ -17,7 +17,21 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { JwtInterceptorInterceptor } from './services/jwt-interceptor.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { NgxPaginationModule } from 'ngx-pagination';
-
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BadgeComponent } from './components/badge/badge/badge.component';
+import { ThemeComponent } from './components/theme/theme/theme.component';
+import { ReservationComponent } from './components/reservation/reservation/reservation.component';
+import { ProgrammeComponent } from './components/programme/programme/programme.component';
+import { PlaningComponent } from './components/planing/planing/planing.component';
+import { PhotoComponent } from './components/photo/photo/photo.component';
+import { PaysComponent } from './components/pays/pays/pays.component';
+import { PaiementComponent } from './components/paiement/paiement/paiement.component';
+import { OffreComponent } from './components/offre/offre/offre.component';
+import { NotificationComponent } from './components/notification/notification/notification.component';
+import { MessageComponent } from './components/message/message/message.component';
+import { FactureComponent } from './components/facture/facture/facture.component';
+import { HomePageComponent } from './components/partials/home-page/home-page.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +44,20 @@ import { NgxPaginationModule } from 'ngx-pagination';
     NavbarComponent,
     PageNotFoundComponent,
     LoginComponent,
-    ProfileComponent
+    ProfileComponent,
+    BadgeComponent,
+    ThemeComponent,
+    ReservationComponent,
+    ProgrammeComponent,
+    PlaningComponent,
+    PhotoComponent,
+    PaysComponent,
+    PaiementComponent,
+    OffreComponent,
+    NotificationComponent,
+    MessageComponent,
+    FactureComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +65,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     ReactiveFormsModule,
     HttpClientModule,
     NgxPaginationModule,
-    
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule
     
   ],
   providers: [{

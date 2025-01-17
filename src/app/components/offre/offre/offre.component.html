@@ -1,0 +1,241 @@
+<div class="container mt-4">
+    <p>List of Offers</p>
+
+    <!-- Add New Offer Button -->
+    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Offer</button>
+
+    <!-- Offer List Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Label</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Country</th>
+                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let offre of listOffre | paginate: { itemsPerPage: 5, currentPage: page }">
+                <td>{{ offre.id }}</td>
+                <td><img [src]="offre.image" alt="Offer Image" width="150" height="150"></td>
+                <td>{{ offre.label }}</td>
+                <td>{{ offre.description }}</td>
+                <td>{{ offre.price }}</td>
+                <td>{{ offre.latitude }}</td>
+                <td>{{ offre.longitude }}</td>
+                <td>
+                    <div *ngIf="offre.pays">
+                        {{ offre?.pays['label'] }}
+                    </div>
+                </td>
+                <td *ngIf="isAdmin">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a class="btn btn-outline-info btn-sm" (click)="showOffre(offre)"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" (click)="editOffre(offre)"><i class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-outline-danger btn-sm" (click)="deleteOffre(offre)"><i class="bi bi-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3 mb-5" *ngIf="isAdmin">
+        <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#themeModal">Add Theme to Offer</button>
+        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#badgeModal">Add Badge to Offer</button>
+    </div>
+
+    <!-- Modal for Add/Edit Offer -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ offreForm.value.id ? 'Edit' : 'Add' }} Offer</h5>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="offreForm" (ngSubmit)="submitForm()">
+                        <div class="form-group mb-3">
+                            <label for="label" class="mb-2">Label</label>
+                            <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter offer label">
+                            <div *ngIf="offreForm.get('label')?.invalid && (offreForm.get('label')?.touched || offreForm.get('label')?.dirty)">
+                                <div *ngIf="offreForm.get('label')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description" class="mb-2">Description</label>
+                            <textarea formControlName="description" class="form-control" id="description" placeholder="Enter offer description"></textarea>
+                            <div *ngIf="offreForm.get('description')?.invalid && (offreForm.get('description')?.touched || offreForm.get('description')?.dirty)">
+                                <div *ngIf="offreForm.get('description')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="price" class="mb-2">Price</label>
+                            <input formControlName="price" type="number" class="form-control" id="price" placeholder="Enter price">
+                            <div *ngIf="offreForm.get('price')?.invalid && (offreForm.get('price')?.touched || offreForm.get('price')?.dirty)">
+                                <div *ngIf="offreForm.get('price')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="image" class="mb-2">Image URL</label>
+                            <input formControlName="image" type="text" class="form-control" id="image" placeholder="Enter image URL">
+                            <div *ngIf="offreForm.get('image')?.invalid && (offreForm.get('image')?.touched || offreForm.get('image')?.dirty)">
+                                <div *ngIf="offreForm.get('image')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="latitude" class="mb-2">Latitude</label>
+                            <input formControlName="latitude" type="number" class="form-control" id="latitude" placeholder="Enter latitude">
+                            <div *ngIf="offreForm.get('latitude')?.invalid && (offreForm.get('latitude')?.touched || offreForm.get('latitude')?.dirty)">
+                                <div *ngIf="offreForm.get('latitude')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="longitude" class="mb-2">Longitude</label>
+                            <input formControlName="longitude" type="number" class="form-control" id="longitude" placeholder="Enter longitude">
+                            <div *ngIf="offreForm.get('longitude')?.invalid && (offreForm.get('longitude')?.touched || offreForm.get('longitude')?.dirty)">
+                                <div *ngIf="offreForm.get('longitude')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="pays" class="mb-2">Country</label>
+                            <select formControlName="pays" class="form-control">
+                                <option *ngFor="let pays of listPays" [ngValue]="pays">{{ pays.label }}</option>
+                            </select>
+                            <div *ngIf="offreForm.get('pays')?.invalid && (offreForm.get('pays')?.touched || offreForm.get('pays')?.dirty)">
+                                <div *ngIf="offreForm.get('pays')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="offreForm.invalid" class="btn btn-primary">
+                                {{ offreForm.value.id ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Add Theme to Offer -->
+    <div class="modal" id="themeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Theme to Offer</h5>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="themeForm" (ngSubmit)="submitTheme()">
+                        
+                        <div class="form-group mb-3">
+                            <label for="offre" class="mb-2">Offre</label>
+                            <select formControlName="offre" class="form-control">
+                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
+                            </select>
+                            <div *ngIf="themeForm.get('offre')?.invalid && (themeForm.get('offre')?.touched || themeForm.get('offre')?.dirty)">
+                                <div *ngIf="themeForm.get('offre')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="theme" class="mb-2">Theme</label>
+                            <select formControlName="theme" class="form-control">
+                                <option *ngFor="let theme of listTheme" [ngValue]="theme">{{ theme.label }}</option>
+                            </select>
+                            <div *ngIf="themeForm.get('theme')?.invalid && (themeForm.get('theme')?.touched || themeForm.get('theme')?.dirty)">
+                                <div *ngIf="themeForm.get('theme')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add other theme related fields if necessary -->
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="themeForm.invalid" class="btn btn-primary">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearThemeInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Badge to Offer -->
+    <div class="modal" id="badgeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="badgeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Badge to Offer</h5>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="badgeForm" (ngSubmit)="submitBadge()">
+                        <div class="form-group mb-3">
+                            <label for="offre" class="mb-2">Offre</label>
+                            <select formControlName="offre" class="form-control">
+                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
+                            </select>
+                            <div *ngIf="badgeForm.get('offre')?.invalid && (badgeForm.get('offre')?.touched || badgeForm.get('offre')?.dirty)">
+                                <div *ngIf="badgeForm.get('offre')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="badge" class="mb-2">Badge</label>
+                            <select formControlName="badge" class="form-control">
+                                <option *ngFor="let badge of listBadge" [ngValue]="badge">{{ badge.label }}</option>
+                            </select>
+                            <div *ngIf="badgeForm.get('badge')?.invalid && (badgeForm.get('badge')?.touched || badgeForm.get('badge')?.dirty)">
+                                <div *ngIf="badgeForm.get('badge')?.getError('required')" class="text-danger">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add other badge related fields if necessary -->
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="badgeForm.invalid" class="btn btn-primary">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearBadgeInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

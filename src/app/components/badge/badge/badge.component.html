@@ -1,0 +1,70 @@
+<div class="container mt-4">
+    <p>List of Badges</p>
+
+    <!-- Add New Badge Button -->
+    <button class="btn btn-success mb-3 float-end"
+     data-bs-toggle="modal"
+     data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Badge</button>
+
+    <!-- Badge List Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Label</th>
+                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let badge of listBadge | paginate: { itemsPerPage: 5, currentPage: page }">
+                <td>{{ badge.id }}</td>
+                <td>{{ badge.label }}</td>
+                <td class="d-flex justify-content-center" *ngIf="isAdmin">
+                    <a class="btn btn-outline-info btn-sm" (click)="showBadge(badge)"><i class="bi bi-eye"></i></a>
+                    <a class="btn btn-outline-warning btn-sm mx-3"
+                     data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" (click)="editBadge(badge)"><i class="bi bi-pencil-square"></i></a>
+                    <a class="btn btn-outline-primary btn-sm" (click)="deleteBadge(badge)"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls (Centered) -->
+    <div class="d-flex justify-content-center">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+
+    <!-- Modal for Add/Edit Badge -->
+    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ badgeForm.value.id ? 'Edit' : 'Add' }} Badge</h5>
+                    
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="badgeForm" (ngSubmit)="submitForm()">
+                        <div class="form-group mb-3">
+                            <label for="label" class="mb-2">Label</label>
+                            <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter badge label">
+                            <div *ngIf="badgeForm.get('label')?.invalid && (badgeForm.get('label')?.touched || badgeForm.get('label')?.dirty)">
+                                <div *ngIf="badgeForm.get('label')?.getError('required')" class="text-primary">
+                                    This field is Required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-5">
+                            <button [disabled]="badgeForm.invalid" class="btn btn-primary">
+                                {{ badgeForm.value.id ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

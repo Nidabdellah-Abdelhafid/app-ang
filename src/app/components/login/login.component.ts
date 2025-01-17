@@ -1,14 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from './../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { JwtTokenService } from './../../services/jwt-token.service';
-import { AccountService } from './../../services/account.service';
+import { AccountService } from '../../services/account.service';
+import { ToastrService } from 'ngx-toastr';  // Import ToastrService
+
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations: [
+    trigger('flyInOut', [
+      state('void', style({ opacity: 0 })),
+      transition(':enter', [
+        animate(300, style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate(300, style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
 
@@ -23,13 +37,14 @@ export class LoginComponent implements OnInit {
     ])
   });
 
-  errorMessage: string = '';  // Declare the errorMessage variable
+  errorMessage: string = '';
 
   constructor(
     private authService: AuthService,
     private jwtTokenService: JwtTokenService,
     private router: Router,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -40,14 +55,14 @@ export class LoginComponent implements OnInit {
     this.loginForm.get('password')?.valueChanges.subscribe(() => {
       this.errorMessage = '';
     });
-   }
+  }
 
   login() {
     const formValue = this.loginForm.value as { email: string, password: string };
-    this.authService.login(formValue).subscribe(
-      res => this.handleResponse(res),
-      err => this.handleError(err)  // Handle the error if any occurs
-    );
+    this.authService.login(formValue).subscribe({
+      next: (res) => this.handleResponse(res),
+      error: (err) => this.handleError(err)
+    });
   }
 
   handleResponse(res: any) {
@@ -57,14 +72,17 @@ export class LoginComponent implements OnInit {
     }
     this.jwtTokenService.handle(res);
     this.accountService.changeStatus(true);
-    this.router.navigateByUrl("/users");
+    this.toastr.success('Login successful!', 'Welcome');  // Show success toast
+    this.router.navigateByUrl("/home");
   }
 
   handleError(err: any) {
     if (err.status === 403) {
       this.errorMessage = 'Access Denied. Invalid credentials!';
+      this.toastr.error('Access Denied. Invalid credentials!', 'Error');  // Show error toast
     } else {
       this.errorMessage = 'An unexpected error occurred. Please try again.';
+      this.toastr.error('An unexpected error occurred. Please try again.', 'Error');  // Show error toast
     }
   }
 }

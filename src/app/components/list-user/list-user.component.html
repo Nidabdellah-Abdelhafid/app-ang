@@ -9,6 +9,8 @@
           <th>Photo</th>
           <th>Full Name</th>
           <th>Email</th>
+          <th>Phone Number</th>
+          <th>Pays</th>
           <th>Roles</th>
         </tr>
       </thead>
@@ -24,6 +26,8 @@
           </td>
           <td>{{ user.fullname }}</td>
           <td>{{ user.email }}</td>
+          <td>{{ user.telephone }}</td>
+          <td>{{ user.pays }}</td>
           <td>
             <ul>
               <li *ngFor="let role of user.appRoles">{{ role.roleName }}</li>
@@ -37,5 +41,6 @@
     <div class="d-flex justify-content-center">
       <pagination-controls (pageChange)="page = $event"></pagination-controls>
     </div>
+
   </div>
   
