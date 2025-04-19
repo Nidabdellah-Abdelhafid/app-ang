@@ -18,7 +18,11 @@ export class ProgrammeComponent implements OnInit {
   listPlaning: any;
   page: number = 1;
   programmeForm: FormGroup;
-
+  itemsPerPage: number = 5;
+  totalPages: number = 0;
+  isModalOpen: boolean = false;
+  filteredProgrammes: any;
+  selectedPlaning: any = null;
   currentUser: any = null;
   isAdmin: boolean = false;
   constructor(
@@ -48,16 +52,49 @@ export class ProgrammeComponent implements OnInit {
     });
   }
 
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) {
+      this.clearInput();
+    }
+  }
+
+  filterByPlaning() {
+    if (!this.selectedPlaning) {
+      this.filteredProgrammes = this.listProgramme;
+    } else {
+      this.filteredProgrammes = this.listProgramme.filter((programme:any) => 
+        programme.planing_programmes?.id === this.selectedPlaning.id
+      );
+    }
+    this.page = 1;
+    this.totalPages = Math.ceil(this.filteredProgrammes.length / this.itemsPerPage);
+  }
+
+  clearFilter() {
+    this.selectedPlaning = null;
+    this.filteredProgrammes = this.listProgramme;
+    this.page = 1;
+    this.totalPages = Math.ceil(this.listProgramme.length / this.itemsPerPage);
+  }
+
+  // Update getProgramme method
   getProgramme() {
     this.programmeService.getAll().subscribe({
       next: (res) => {
         this.listProgramme = res;
+        this.filteredProgrammes = res;
+        this.totalPages = Math.ceil(this.listProgramme.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching programmes', err);
+        this.listProgramme = [];
+        this.filteredProgrammes = [];
+        this.totalPages = 1;
       }
     });
   }
+
 
   getProgrammeWithDetails() {
     this.programmeService.getProgrammeWithDetails().subscribe({
@@ -87,10 +124,14 @@ export class ProgrammeComponent implements OnInit {
     }
 
     const programme = this.programmeForm.value;
+    console.log('before Sending data:', programme);
+
     if (programme.id) {
+      // console.log('Sending data:', programme);
       this.programmeService.update(programme).subscribe({
         next: (res) => {
           this.getProgramme(); // Refresh the programme list
+          this.toggleModal(); // Close the modal after successful update
           Swal.fire({
             title: "Updated!",
             text: "Your programme has been updated.",
@@ -103,9 +144,11 @@ export class ProgrammeComponent implements OnInit {
         }
       });
     } else {
+      console.log('Sending data:', programme);
       this.programmeService.create(programme).subscribe({
         next: (res) => {
           this.getProgramme(); // Refresh the programme list
+          this.toggleModal(); // Close the modal after successful update
           Swal.fire({
             position: "top-end",
             icon: "success",
@@ -132,13 +175,8 @@ export class ProgrammeComponent implements OnInit {
   }
 
   editProgramme(programme: any) {
-    this.programmeForm.setValue({
-      id: programme.id,
-      heure: programme.heure,
-      label: programme.label,
-      description: programme.description,
-      planing_programmes: programme.planing_programmes
-    });
+    this.programmeForm.patchValue(programme);
+    this.toggleModal();
   }
 
   deleteProgramme(programme: any) {

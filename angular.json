@@ -27,13 +27,11 @@
             "styles": [
               "src/styles.css",
               "./node_modules/ngx-toastr/toastr.css",
-              "./node_modules/bootswatch/dist/journal/bootstrap.min.css",
               "./node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
-            "scripts": [
-              "./node_modules/jquery/dist/jquery.js",
-              "./node_modules/@popperjs/core/dist/umd/popper.min.js",
-               "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "sweetalert2"
             ]
           },
           "configurations": {

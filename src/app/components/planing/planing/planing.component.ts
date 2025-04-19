@@ -12,14 +12,18 @@ import { JwtTokenService } from 'src/app/services/jwt-token.service';
   styleUrls: ['./planing.component.css']
 })
 export class PlaningComponent implements OnInit {
-
   listPlaning: any;
   listOffre: any;
   page: number = 1;
+  itemsPerPage: number = 5;
+  totalPages: number = 0;
   planingForm: FormGroup;
-
+  isModalOpen = false;
   currentUser: any = null;
   isAdmin: boolean = false;
+  filteredPlanings: any;
+  selectedOffre: any = null;
+
   constructor(
     private planingService: PlaningService,
     private offreService: OffreService,
@@ -44,17 +48,39 @@ export class PlaningComponent implements OnInit {
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+    this.filteredPlanings = this.listPlaning || [];
   }
 
   getPlaning() {
     this.planingService.getAll().subscribe({
       next: (res) => {
         this.listPlaning = res;
+        this.filteredPlanings = res;
+        this.totalPages = Math.ceil(this.listPlaning.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching planings', err);
       }
     });
+  }
+
+  filterByOffre() {
+    if (!this.selectedOffre) {
+      this.filteredPlanings = this.listPlaning;
+    } else {
+      this.filteredPlanings = this.listPlaning.filter((planing:any) => 
+        planing.offre?.id === this.selectedOffre.id
+      );
+    }
+    this.page = 1;
+    this.totalPages = Math.ceil(this.filteredPlanings.length / this.itemsPerPage);
+  }
+
+  clearFilter() {
+    this.selectedOffre = null;
+    this.filteredPlanings = this.listPlaning;
+    this.page = 1;
+    this.totalPages = Math.ceil(this.listPlaning.length / this.itemsPerPage);
   }
 
   getOffre() {
@@ -68,16 +94,26 @@ export class PlaningComponent implements OnInit {
     });
   }
 
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) {
+      this.clearInput();
+    }
+  }
+
   submitForm() {
     if (this.planingForm.invalid) {
       return;
     }
 
     const planing = this.planingForm.value;
+    
     if (planing.id) {
       this.planingService.update(planing).subscribe({
         next: (res) => {
           this.getPlaning(); // Refresh the planing list
+          this.toggleModal();
+          this.page = 1;
           Swal.fire({
             title: "Updated!",
             text: "Your item has been updated.",
@@ -90,9 +126,12 @@ export class PlaningComponent implements OnInit {
         }
       });
     } else {
+      console.log('Sending data:', planing);
       this.planingService.create(planing).subscribe({
         next: (res) => {
           this.getPlaning(); // Refresh the planing list
+          this.toggleModal();
+          this.page = 1;
           Swal.fire({
             position: "top-end",
             icon: "success",
@@ -101,6 +140,7 @@ export class PlaningComponent implements OnInit {
             timer: 1500
           });
           this.planingForm.reset(); // Reset form after successful submission
+          
         },
         error: (err) => {
           console.error('Error creating planing', err);
@@ -119,13 +159,8 @@ export class PlaningComponent implements OnInit {
   }
 
   editPlaning(planing: any) {
-    this.planingForm.setValue({
-      id: planing.id,
-      label: planing.label,
-      description: planing.description,
-      jourNumero: planing.jourNumero,
-      offre: planing.offre
-    });
+    this.planingForm.patchValue(planing);
+    this.toggleModal();
   }
 
   deletePlaning(planing: any) {

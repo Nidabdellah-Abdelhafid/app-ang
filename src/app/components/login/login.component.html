@@ -1,40 +1,87 @@
-<div class="row">
-  <div class="col-md-4 mt-5 mx-auto">
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
-         <!-- Display error message if it's set -->
-         <div *ngIf="errorMessage" class="alert alert-danger">
-          {{ errorMessage }}
-      </div>  
-        
-        <div class="form-group mb-3">
-              <label for="email">Email</label>
-              <input formControlName="email" type="text" class="form-control" id="email">
-              <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)">
-                  <div *ngIf="loginForm.get('email')?.getError('required')" class="text-primary">
-                      This field is Required!
-                  </div>
-                  <div *ngIf="loginForm.get('email')?.getError('email')" class="text-primary">
-                      This field should be email address !!
-                  </div>
-              </div>
+<div class="min-h-[70vh] flex items-center justify-center bg-gray-50 pt-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg">
+      <!-- Header -->
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-gray-900">Welcome back</h2>
+        <p class="mt-2 text-sm text-gray-600">Sign in to your account</p>
+      </div>
+  
+      <!-- Error Alert -->
+      <div *ngIf="errorMessage" 
+           class="bg-red-50 text-red-700 p-4 rounded-lg text-sm flex items-center gap-2">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ errorMessage }}
+      </div>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="mt-8 space-y-6">
+        <!-- Email -->
+        <div class="space-y-2">
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email Address
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="bi bi-envelope text-gray-400"></i>
+            </div>
+            <input formControlName="email" 
+                   type="email" 
+                   id="email"
+                   class="input input-bordered w-full pl-10 focus:outline-none focus:border-[#eb6864]" 
+                   placeholder="you@example.com">
           </div>
-
-          <div class="form-group mb-3">
-              <label for="password">Password</label>
-              <input formControlName="password" type="password" class="form-control" id="password">
-              <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)">
-                  <div *ngIf="loginForm.get('password')?.getError('required')" class="text-primary">
-                      This field is Required!
-                  </div>
-                  <div *ngIf="loginForm.get('password')?.getError('minlength')" class="text-primary">
-                      This field should be at least 8 characters!
-                  </div>
-              </div>
+          <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)"
+               class="text-sm text-error mt-1">
+            <div *ngIf="loginForm.get('email')?.getError('required')">Email is required</div>
+            <div *ngIf="loginForm.get('email')?.getError('email')">Please enter a valid email address</div>
           </div>
-
-         
-
-          <button [disabled]="loginForm.invalid" class="btn btn-block btn-primary col-12">Login</button>
+        </div>
+  
+        <!-- Password -->
+        <div class="space-y-2">
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="bi bi-lock text-gray-400"></i>
+            </div>
+            <input formControlName="password" 
+                   type="password" 
+                   id="password"
+                   class="input input-bordered w-full pl-10 focus:outline-none focus:border-[#eb6864]" 
+                   placeholder="••••••••">
+          </div>
+          <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)"
+               class="text-sm text-error mt-1">
+            <div *ngIf="loginForm.get('password')?.getError('required')">Password is required</div>
+            <div *ngIf="loginForm.get('password')?.getError('minlength')">Password must be at least 8 characters</div>
+          </div>
+        </div>
+  
+        <!-- Remember & Forgot -->
+        <!-- <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm">
+            <label class="ml-2 block text-sm text-gray-700">Remember me</label>
+          </div>
+          <a href="#" class="text-sm text-primary hover:text-primary-focus">Forgot password?</a>
+        </div> -->
+  
+        <!-- Submit Button -->
+        <button type="submit" 
+                [disabled]="loginForm.invalid"
+                class="btn btn-error w-full gap-2">
+          <i class="bi bi-box-arrow-in-right"></i>
+          Sign in
+        </button>
+  
+        <!-- Register Link -->
+        <p class="text-center text-sm text-gray-600">
+          Don't have an account?
+          <a routerLink="/createUser" class="text-error hover:text-error-focus font-medium">
+            Create one now
+          </a>
+        </p>
       </form>
+    </div>
   </div>
-</div>

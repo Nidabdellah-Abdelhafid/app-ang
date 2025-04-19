@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import Swal from 'sweetalert2'
 import { AccountService } from 'src/app/services/account.service';
 import { JwtTokenService } from 'src/app/services/jwt-token.service';
+import { CeilPipe } from '../../../pipes/ceil.pipe';
 
 @Component({
   selector: 'app-offre',
@@ -23,9 +24,19 @@ export class OffreComponent implements OnInit {
   offreForm: FormGroup;
   themeForm: FormGroup;
   badgeForm: FormGroup;
-
+  itemsPerPage: number = 5;
+  totalPages: number = 0;
   currentUser: any = null;
   isAdmin: boolean = false;
+  offreBadges: any[] = [];
+  offreThemes: any[] = [];
+  selectedOffre: any = null;
+  isOfferModalOpen: boolean = false;
+  isThemeModalOpen: boolean = false;
+  isBadgeModalOpen: boolean = false;
+  showOffreModal: boolean = false;
+  filteredOffres: any;
+  selectedPays: any = null;
   constructor(
     private offreService: OffreService,
     private paysService: PaysService,
@@ -68,17 +79,51 @@ export class OffreComponent implements OnInit {
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+    this.filteredOffres = this.listOffre || [];
   }
 
   getOffre() {
     this.offreService.getAll().subscribe({
       next: (res) => {
+        this.listOffre = [];
         this.listOffre = res;
+        this.filteredOffres = res;
+        this.calculateTotalPages();
       },
       error: (err) => {
         console.error('Error fetching offers', err);
+        this.listOffre = [];
+        this.filteredOffres = [];
+        this.calculateTotalPages();
       }
     });
+  }
+  
+  filterByPays() {
+    if (!this.selectedPays) {
+      this.filteredOffres = this.listOffre;
+    } else {
+      this.filteredOffres = this.listOffre.filter((offre:any) => 
+        offre.pays?.id === this.selectedPays.id
+      );
+    }
+    this.page = 1;
+    this.calculateTotalPages();
+  }
+
+  clearFilter() {
+    this.selectedPays = null;
+    this.filteredOffres = this.listOffre;
+    this.page = 1;
+    this.calculateTotalPages();
+  }
+
+  calculateTotalPages(): void {
+    if (this.filteredOffres && this.filteredOffres.length > 0) {
+      this.totalPages = Math.ceil(this.filteredOffres.length / this.itemsPerPage);
+    } else {
+      this.totalPages = 1;
+    }
   }
 
   getTheme() {
@@ -124,6 +169,7 @@ export class OffreComponent implements OnInit {
       this.offreService.update(offre).subscribe({
         next: (res) => {
           this.getOffre(); // Refresh the offer list
+          this.toggleOfferModal();
           Swal.fire({
             title: "Updated!",
             text: "Your item has been updated.",
@@ -139,6 +185,7 @@ export class OffreComponent implements OnInit {
       this.offreService.create(offre).subscribe({
         next: (res) => {
           this.getOffre(); // Refresh the offer list
+          this.toggleOfferModal();
           Swal.fire({
             position: "top-end",
             icon: "success",
@@ -166,6 +213,7 @@ export class OffreComponent implements OnInit {
       this.offreService.addThemeToOffre(data).subscribe({
         next: (res) => {
           this.getOffre(); // Refresh the offer list
+          this.toggleThemeModal();
           Swal.fire({
             position: "top-end",
             icon: "success",
@@ -196,6 +244,7 @@ export class OffreComponent implements OnInit {
       this.offreService.addBadgeToOffre(data).subscribe({
         next: (res) => {
           this.getOffre(); // Refresh the offer list
+          this.toggleBadgeModal();
           Swal.fire({
             position: "top-end",
             icon: "success",
@@ -227,9 +276,6 @@ export class OffreComponent implements OnInit {
     this.badgeForm.reset();
   }
 
-  showOffre(offre: any) {
-    console.log('Show details for offer', offre);
-  }
 
   editOffre(offre: any) {
     this.offreForm.setValue({
@@ -272,6 +318,65 @@ export class OffreComponent implements OnInit {
       }
     });
   }
+  
+  // Add these methods
+  toggleOfferModal() {
+    this.isOfferModalOpen = !this.isOfferModalOpen;
+    if (!this.isOfferModalOpen) {
+      this.clearInput();
+    }
+  }
 
+  toggleThemeModal() {
+    this.isThemeModalOpen = !this.isThemeModalOpen;
+    if (!this.isThemeModalOpen) {
+      this.clearThemeInput();
+    }
+  }
 
+  toggleBadgeModal() {
+    this.isBadgeModalOpen = !this.isBadgeModalOpen;
+    if (!this.isBadgeModalOpen) {
+      this.clearBadgeInput();
+    }
+  }
+
+  showOffre(offre: any) {
+    this.selectedOffre = offre;
+    console.log("selected :",offre);
+    // Update the subscription handling
+    this.offreService.getOffreBadges(offre.id).subscribe({
+      next: (badges: any[]) => {
+        this.offreBadges = badges;
+        console.log(this.offreBadges);
+      },
+      error: (err) => {
+        console.error('Error fetching badges', err);
+        this.offreBadges = [];
+      }
+    });
+
+    this.offreService.getOffreThemes(offre.id).subscribe({
+      next: (themes: any[]) => {
+        this.offreThemes = themes;
+        console.log(this.offreThemes);
+
+      },
+      error: (err) => {
+        console.error('Error fetching themes', err);
+        this.offreThemes = [];
+      }
+    });
+
+    this.toggleShowOffreModal();
+  }
+
+  toggleShowOffreModal() {
+    this.showOffreModal = !this.showOffreModal;
+    if (!this.showOffreModal) {
+      this.offreBadges = [];
+      this.offreThemes = [];
+      this.selectedOffre = null;
+    }
+  }
 }

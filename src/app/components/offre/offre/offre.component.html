@@ -1,241 +1,421 @@
-<div class="container mt-4">
-    <p>List of Offers</p>
+<div class="p-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">Offers</h2>
+        <p class="text-sm text-gray-600">Manage and organize your travel packages</p>
+      </div>
+      <div class="flex gap-3" *ngIf="isAdmin">
+        <!-- Update the button to use new toggle method -->
+        <button  *ngIf="isAdmin"  class="btn btn-primary gap-2" (click)="toggleOfferModal()">
+          <i class="bi bi-plus-lg"></i>
+          New Offer
+        </button>
+        <!-- Admin Actions -->
+    <div class="flex justify-end gap-3" *ngIf="isAdmin">
+      <button class="btn btn-outline btn-primary gap-2" (click)="toggleThemeModal()">
+        <i class="bi bi-tags"></i>
+        Give Theme
+      </button>
+      <button class="btn btn-outline btn-primary gap-2" (click)="toggleBadgeModal()">
+        <i class="bi bi-award"></i>
+        Give Badge
+      </button>
+    </div>
+      </div>
+    </div>
 
-    <!-- Add New Offer Button -->
-    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Offer</button>
-
-    <!-- Offer List Table -->
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Image</th>
-                <th>Label</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Country</th>
-                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
+    <div class="mb-6 bg-white rounded-lg p-4 shadow-sm">
+      <div class="flex items-center gap-4">
+        <div class="form-control w-auto">
+          <select id="paysFilter"
+                  [(ngModel)]="selectedPays"
+                  (ngModelChange)="filterByPays()"
+                  aria-label="Filter by country"
+                  class="select select-bordered w-64 focus:outline-none focus:border-[#eb6864]">
+            <option [ngValue]="null">Filter by country</option>
+            <option *ngFor="let pays of listPays" [ngValue]="pays">
+              {{pays.label}}
+            </option>
+          </select>
+        </div>
+    
+        <button class="btn btn-ghost h-[2.5rem]" 
+                (click)="clearFilter()" 
+                *ngIf="selectedPays">
+          <i class="bi bi-x-circle"></i>
+          Clear Filter
+        </button>
+      </div>
+    </div>
+  
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr class="bg-base-200">
+              <th class="font-medium">ID</th>
+              <th class="font-medium">Destination</th>
+              <th class="font-medium">Details</th>
+              <th class="font-medium">Price</th>
+              <th class="font-medium">Location</th>
+              <th class="font-medium">Country</th>
+              <th class="text-right" *ngIf="isAdmin">Actions</th>
             </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let offre of listOffre | paginate: { itemsPerPage: 5, currentPage: page }">
-                <td>{{ offre.id }}</td>
-                <td><img [src]="offre.image" alt="Offer Image" width="150" height="150"></td>
-                <td>{{ offre.label }}</td>
-                <td>{{ offre.description }}</td>
-                <td>{{ offre.price }}</td>
-                <td>{{ offre.latitude }}</td>
-                <td>{{ offre.longitude }}</td>
-                <td>
-                    <div *ngIf="offre.pays">
-                        {{ offre?.pays['label'] }}
+          </thead>
+          <tbody>
+            <tr *ngFor="let offre of filteredOffres | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+              class="hover:bg-base-100/50">
+              <td>{{ offre.id }}</td>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar">
+                    <div class="w-16 h-16 rounded-lg">
+                      <img [src]="offre.image" [alt]="offre.label" class="object-cover" alt=""/>
                     </div>
-                </td>
-                <td *ngIf="isAdmin">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <a class="btn btn-outline-info btn-sm" (click)="showOffre(offre)"><i class="bi bi-eye"></i></a>
-                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" (click)="editOffre(offre)"><i class="bi bi-pencil-square"></i></a>
-                        <a class="btn btn-outline-danger btn-sm" (click)="deleteOffre(offre)"><i class="bi bi-trash"></i></a>
-                    </div>
-                </td>
+                  </div>
+                  <span class="font-medium">{{ offre.label }}</span>
+                </div>
+              </td>
+              <td class="max-w-xs">
+                <p class="text-sm text-gray-600 truncate">{{ offre.description }}</p>
+              </td>
+              <td>
+                <span class="font-medium text-primary">${{ offre.price }}</span>
+              </td>
+              <td class="text-sm">
+                <div class="flex items-center gap-1">
+                  <i class="bi bi-geo-alt text-primary"></i>
+                  {{ offre.latitude }}, {{ offre.longitude }}
+                </div>
+              </td>
+              <td>{{ offre?.pays['label'] }}</td>
+              <td *ngIf="isAdmin">
+                <div class="flex justify-end gap-2">
+                  <button title="View details" type="button" class="btn btn-ghost btn-sm" 
+                    (click)="showOffre(offre); toggleShowOffreModal()">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button title="-" type="button" class="btn btn-ghost btn-sm" (click)="editOffre(offre); toggleOfferModal()">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button title="-" type="button" class="btn btn-ghost btn-sm text-error" (click)="deleteOffre(offre)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
             </tr>
-        </tbody>
-    </table>
-
-    <!-- Pagination Controls (Centered) -->
-    <div class="d-flex justify-content-center">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Pagination -->
+      <div class="border-t p-4 flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Showing page {{ page }} of {{ totalPages }}
+        </span>
+        <pagination-controls 
+          (pageChange)="page = $event"
+          class="my-pagination"
+          [responsive]="true">
+        </pagination-controls>
+      </div>
     </div>
-
-    <div class="d-flex justify-content-end mt-3 mb-5" *ngIf="isAdmin">
-        <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#themeModal">Add Theme to Offer</button>
-        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#badgeModal">Add Badge to Offer</button>
-    </div>
-
-    <!-- Modal for Add/Edit Offer -->
-    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ offreForm.value.id ? 'Edit' : 'Add' }} Offer</h5>
+  
+    
+  
+    <!-- Modals -->
+    <!-- Add/Edit Offer Modal -->
+    <div *ngIf="isOfferModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4 mx-auto">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleOfferModal()"></div>
+        
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full">
+          <div class="p-4 border-b">
+            <h5 class="text-xl font-bold">{{ offreForm.value.id ? 'Edit' : 'New' }} Offer</h5>
+          </div>
+          <div class="p-6">
+            <form [formGroup]="offreForm" (ngSubmit)="submitForm()" class="space-y-4">
+              <!-- Form content here -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-4">
+                  <div class="form-control">
+                    <label class="label">Label</label>
+                    <input type="text" formControlName="label" 
+                           class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                           placeholder="Enter offer name"/>
+                    <div *ngIf="offreForm.get('label')?.invalid && offreForm.get('label')?.touched"
+                         class="text-sm text-error mt-1">
+                      Please enter a label
+                    </div>
+                  </div>
+  
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Description</span>
+                      
+                    </label>
+                    <textarea formControlName="description" 
+                             class="textarea textarea-bordered min-h-[120px] w-full resize-y focus:outline-none focus:border-[#eb6864]" 
+                             placeholder="Enter a detailed description of the offer..."
+                             rows="4"></textarea>
+                             <span class="label-text-alt text-error" 
+                             *ngIf="offreForm.get('description')?.invalid && offreForm.get('description')?.touched">
+                         Required field
+                       </span>
+                  </div>
+  
+                  <div class="form-control">
+                    <label class="label">Price</label>
+                    <div class="input-group">
+                      <input type="number" formControlName="price" 
+                             class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                             placeholder="0.00"/>
+                        <div class="text-error" *ngIf="offreForm.get('price')?.invalid && (offreForm.get('price')?.touched || offreForm.get('price')?.dirty)">
+                        <div *ngIf="offreForm.get('price')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <form [formGroup]="offreForm" (ngSubmit)="submitForm()">
-                        <div class="form-group mb-3">
-                            <label for="label" class="mb-2">Label</label>
-                            <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter offer label">
-                            <div *ngIf="offreForm.get('label')?.invalid && (offreForm.get('label')?.touched || offreForm.get('label')?.dirty)">
-                                <div *ngIf="offreForm.get('label')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="description" class="mb-2">Description</label>
-                            <textarea formControlName="description" class="form-control" id="description" placeholder="Enter offer description"></textarea>
-                            <div *ngIf="offreForm.get('description')?.invalid && (offreForm.get('description')?.touched || offreForm.get('description')?.dirty)">
-                                <div *ngIf="offreForm.get('description')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="price" class="mb-2">Price</label>
-                            <input formControlName="price" type="number" class="form-control" id="price" placeholder="Enter price">
-                            <div *ngIf="offreForm.get('price')?.invalid && (offreForm.get('price')?.touched || offreForm.get('price')?.dirty)">
-                                <div *ngIf="offreForm.get('price')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="image" class="mb-2">Image URL</label>
-                            <input formControlName="image" type="text" class="form-control" id="image" placeholder="Enter image URL">
-                            <div *ngIf="offreForm.get('image')?.invalid && (offreForm.get('image')?.touched || offreForm.get('image')?.dirty)">
-                                <div *ngIf="offreForm.get('image')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="latitude" class="mb-2">Latitude</label>
-                            <input formControlName="latitude" type="number" class="form-control" id="latitude" placeholder="Enter latitude">
-                            <div *ngIf="offreForm.get('latitude')?.invalid && (offreForm.get('latitude')?.touched || offreForm.get('latitude')?.dirty)">
-                                <div *ngIf="offreForm.get('latitude')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="longitude" class="mb-2">Longitude</label>
-                            <input formControlName="longitude" type="number" class="form-control" id="longitude" placeholder="Enter longitude">
-                            <div *ngIf="offreForm.get('longitude')?.invalid && (offreForm.get('longitude')?.touched || offreForm.get('longitude')?.dirty)">
-                                <div *ngIf="offreForm.get('longitude')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="pays" class="mb-2">Country</label>
-                            <select formControlName="pays" class="form-control">
-                                <option *ngFor="let pays of listPays" [ngValue]="pays">{{ pays.label }}</option>
-                            </select>
-                            <div *ngIf="offreForm.get('pays')?.invalid && (offreForm.get('pays')?.touched || offreForm.get('pays')?.dirty)">
-                                <div *ngIf="offreForm.get('pays')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer mt-5">
-                            <button [disabled]="offreForm.invalid" class="btn btn-primary">
-                                {{ offreForm.value.id ? 'Update' : 'Save' }}
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
-                        </div>
-                    </form>
+  
+                <!-- Right Column -->
+                <div class="space-y-4">
+                  <div class="form-control">
+                    <label class="label">Image URL</label>
+                    <input type="text" formControlName="image" 
+                           class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"/>
+                    <div class="text-error" *ngIf="offreForm.get('image')?.invalid && (offreForm.get('image')?.touched || offreForm.get('image')?.dirty)">
+                    <div *ngIf="offreForm.get('image')?.getError('required')" class="text-danger">
+                        This field is Required!
+                    </div>
                 </div>
-            </div>
+                  </div>
+  
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="form-control">
+                      <label class="label">Latitude</label>
+                      <input type="number" formControlName="latitude" 
+                             class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"/>
+                        <div class="text-error" *ngIf="offreForm.get('latitude')?.invalid && (offreForm.get('latitude')?.touched || offreForm.get('latitude')?.dirty)">
+                        <div *ngIf="offreForm.get('latitude')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-control">
+                      <label class="label">Longitude</label>
+                      <input type="number" formControlName="longitude" 
+                             class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"/>
+                        <div class="text-error" *ngIf="offreForm.get('longitude')?.invalid && (offreForm.get('longitude')?.touched || offreForm.get('longitude')?.dirty)">
+                        <div *ngIf="offreForm.get('longitude')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                    </div>
+                  </div>
+  
+                  <div class="form-control">
+                    <label class="label" for="paysSelect">Country</label>
+                    <select id="paysSelect"
+                            formControlName="pays" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select country">
+                      <option disabled>Select a country</option>
+                      <option *ngFor="let pays of listPays" [ngValue]="pays">
+                        {{ pays.label }}
+                      </option>
+                    </select>
+                    <div class="text-error" *ngIf="offreForm.get('pays')?.invalid && (offreForm.get('pays')?.touched || offreForm.get('pays')?.dirty)">
+                        <div *ngIf="offreForm.get('pays')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="btn btn-ghost" (click)="toggleOfferModal()">
+                  Cancel
+                </button>
+                <button type="submit" [disabled]="offreForm.invalid" class="btn btn-primary">
+                  {{ offreForm.value.id ? 'Update' : 'Save' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- Modal for Add Theme to Offer -->
-    <div class="modal" id="themeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="themeModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Theme to Offer</h5>
-                </div>
-                <div class="modal-body">
-                    <form [formGroup]="themeForm" (ngSubmit)="submitTheme()">
-                        
-                        <div class="form-group mb-3">
-                            <label for="offre" class="mb-2">Offre</label>
-                            <select formControlName="offre" class="form-control">
-                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
-                            </select>
-                            <div *ngIf="themeForm.get('offre')?.invalid && (themeForm.get('offre')?.touched || themeForm.get('offre')?.dirty)">
-                                <div *ngIf="themeForm.get('offre')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
+  
+    <!-- Theme Modal -->
+    <div *ngIf="isThemeModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleThemeModal()"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+          <div class="p-4 border-b">
+            <h5 class="text-xl font-bold">Add Theme to Offer</h5>
+          </div>
+          <div class="p-6">
+            <form [formGroup]="themeForm" (ngSubmit)="submitTheme()" class="space-y-4">
+                <div class="form-control">
+                    <label class="label" for="offreThemeSelect">Select Offer</label>
+                    <select id="offreThemeSelect"
+                            formControlName="offre" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select offer for theme">
+                      <option disabled>Choose an offer</option>
+                      <option *ngFor="let offre of listOffre" [ngValue]="offre">
+                        {{ offre.label }}
+                      </option>
+                    </select>
+                    <div class="text-error" *ngIf="themeForm.get('offre')?.invalid && (themeForm.get('offre')?.touched || themeForm.get('offre')?.dirty)">
+                        <div *ngIf="themeForm.get('offre')?.getError('required')" class="text-danger">
+                            This field is Required!
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="theme" class="mb-2">Theme</label>
-                            <select formControlName="theme" class="form-control">
-                                <option *ngFor="let theme of listTheme" [ngValue]="theme">{{ theme.label }}</option>
-                            </select>
-                            <div *ngIf="themeForm.get('theme')?.invalid && (themeForm.get('theme')?.touched || themeForm.get('theme')?.dirty)">
-                                <div *ngIf="themeForm.get('theme')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-control">
+                    <label class="label" for="themeSelect">Select Theme</label>
+                    <select id="themeSelect"
+                            formControlName="theme" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select theme">
+                      <option disabled>Choose a theme</option>
+                      <option *ngFor="let theme of listTheme" [ngValue]="theme">
+                        {{ theme.label }}
+                      </option>
+                    </select>
+                    <div class="text-error" *ngIf="themeForm.get('theme')?.invalid && (themeForm.get('theme')?.touched || themeForm.get('theme')?.dirty)">
+                        <div *ngIf="themeForm.get('theme')?.getError('required')" class="text-danger">
+                            This field is Required!
                         </div>
-                        <!-- Add other theme related fields if necessary -->
-                        <div class="modal-footer mt-5">
-                            <button [disabled]="themeForm.invalid" class="btn btn-primary">
-                                Save
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearThemeInput()">Close</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                    </div>
+                  </div>
+              <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="btn btn-ghost" (click)="toggleThemeModal()">
+                  Cancel
+                </button>
+                <button type="submit" [disabled]="themeForm.invalid" class="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
+    </div>
+  
+    <!-- Badge Modal -->
+    <div *ngIf="isBadgeModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleBadgeModal()"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+          <div class="p-4 border-b">
+            <h5 class="text-xl font-bold">Add Badge to Offer</h5>
+          </div>
+          <div class="p-6">
+            <form [formGroup]="badgeForm" (ngSubmit)="submitBadge()" class="space-y-4">
+                <div class="form-control">
+                    <label class="label" for="offreBadgeSelect">Select Offer</label>
+                    <select id="offreBadgeSelect"
+                            formControlName="offre" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select offer for badge">
+                      <option disabled>Choose an offer</option>
+                      <option *ngFor="let offre of listOffre" [ngValue]="offre">
+                        {{ offre.label }}
+                      </option>
+                    </select>
+                    <div class="text-error" *ngIf="badgeForm.get('offre')?.invalid && (badgeForm.get('offre')?.touched || badgeForm.get('offre')?.dirty)">
+                        <div *ngIf="badgeForm.get('offre')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-control">
+                    <label class="label" for="badgeSelect">Select Badge</label>
+                    <select id="badgeSelect"
+                            formControlName="badge" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select badge">
+                      <option disabled>Choose a badge</option>
+                      <option *ngFor="let badge of listBadge" [ngValue]="badge">
+                        {{ badge.label }}
+                      </option>
+                    </select>
+                    <div class="text-error" *ngIf="badgeForm.get('badge')?.invalid && (badgeForm.get('badge')?.touched || badgeForm.get('badge')?.dirty)">
+                        <div *ngIf="badgeForm.get('badge')?.getError('required')" class="text-danger">
+                            This field is Required!
+                        </div>
+                    </div>
+                  </div>
+              <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="btn btn-ghost" (click)="toggleBadgeModal()">
+                  Cancel
+                </button>
+                <button type="submit" [disabled]="badgeForm.invalid" class="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Modal for Add Badge to Offer -->
-    <div class="modal" id="badgeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="badgeModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Badge to Offer</h5>
-                </div>
-                <div class="modal-body">
-                    <form [formGroup]="badgeForm" (ngSubmit)="submitBadge()">
-                        <div class="form-group mb-3">
-                            <label for="offre" class="mb-2">Offre</label>
-                            <select formControlName="offre" class="form-control">
-                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
-                            </select>
-                            <div *ngIf="badgeForm.get('offre')?.invalid && (badgeForm.get('offre')?.touched || badgeForm.get('offre')?.dirty)">
-                                <div *ngIf="badgeForm.get('offre')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="badge" class="mb-2">Badge</label>
-                            <select formControlName="badge" class="form-control">
-                                <option *ngFor="let badge of listBadge" [ngValue]="badge">{{ badge.label }}</option>
-                            </select>
-                            <div *ngIf="badgeForm.get('badge')?.invalid && (badgeForm.get('badge')?.touched || badgeForm.get('badge')?.dirty)">
-                                <div *ngIf="badgeForm.get('badge')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Add other badge related fields if necessary -->
-                        <div class="modal-footer mt-5">
-                            <button [disabled]="badgeForm.invalid" class="btn btn-primary">
-                                Save
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearBadgeInput()">Close</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- View Offer Modal -->
+<div *ngIf="showOffreModal" class="fixed inset-0 z-50 overflow-y-auto">
+  <div class="flex min-h-screen items-center justify-center p-4">
+    <div class="fixed inset-0 bg-black opacity-50" (click)="toggleShowOffreModal()"></div>
+    <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full">
+      <div class="p-4 border-b">
+        <h5 class="text-xl font-bold">Offer Details</h5>
+      </div>
+      <div class="p-6">
+        <!-- Badges Section -->
+        <div class="mb-4">
+          <h6 class="text-lg font-semibold mb-2">Badges</h6>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let badge of offreBadges" 
+                  class="badge badge-primary badge-outline">
+              {{ badge.label }}
+            </span>
+            <span *ngIf="offreBadges.length === 0" class="text-sm text-gray-500">
+              No badges assigned
+            </span>
+          </div>
         </div>
+
+        <!-- Themes Section -->
+        <div class="mb-4">
+          <h6 class="text-lg font-semibold mb-2">Themes</h6>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let theme of offreThemes" 
+                  class="badge badge-secondary badge-outline">
+              {{ theme.label }}
+            </span>
+            <span *ngIf="offreThemes.length === 0" class="text-sm text-gray-500">
+              No themes assigned
+            </span>
+          </div>
+        </div>
+
+        <div class="flex justify-end mt-4">
+          <button type="button" class="btn btn-ghost" (click)="toggleShowOffreModal()">
+            Close
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
+  </div>

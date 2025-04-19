@@ -1,110 +1,192 @@
-<div class="container mt-4">
-    <p>List of Planings</p>
-
-    <!-- Add New Planing Button -->
-    <button class="btn btn-success mb-3 float-end" data-bs-toggle="modal" data-bs-target="#exampleModal" *ngIf="isAdmin">Add New Planing</button>
-
-    <!-- Planing List Table -->
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Label</th>
-                <th>Description</th>
-                <th>Jour Numero</th>
-                <th>Offer</th>
-                <th class="d-flex justify-content-center" *ngIf="isAdmin">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let planing of listPlaning | paginate: { itemsPerPage: 5, currentPage: page }">
-                <td>{{ planing.id }}</td>
-                <td>{{ planing.label }}</td>
-                <td>{{ planing.description }}</td>
-                <td>{{ planing.jourNumero }}</td>
-                <td>
-                    <div *ngIf="planing.offre">
-                        {{ planing?.offre['label'] }}
-                    </div>
-                </td>
-                <td *ngIf="isAdmin">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <a class="btn btn-outline-info btn-sm" (click)="showPlaning(planing)"><i class="bi bi-eye"></i></a>
-                        <a class="btn btn-outline-warning btn-sm mx-3" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" (click)="editPlaning(planing)"><i class="bi bi-pencil-square"></i></a>
-                        <a class="btn btn-outline-danger btn-sm" (click)="deletePlaning(planing)"><i class="bi bi-trash"></i></a>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <!-- Pagination Controls (Centered) -->
-    <div class="d-flex justify-content-center">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+<div class="p-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">Planning Management</h2>
+        <p class="text-sm text-gray-600">Manage your travel planning and schedules</p>
+      </div>
+      <button *ngIf="isAdmin" 
+              class="btn btn-primary gap-2" 
+              (click)="toggleModal()">
+        <i class="bi bi-plus-lg"></i>
+        Add Planning
+      </button>
     </div>
 
-    <!-- Modal for Add/Edit Planing -->
-    <div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ planingForm.value.id ? 'Edit' : 'Add' }} Planing</h5>
+    <div class="mb-6 bg-white rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-4">
+          <div class="form-control w-auto">
+            <select id="offerFilter"
+                    [(ngModel)]="selectedOffre"
+                    (ngModelChange)="filterByOffre()"
+                    aria-label="Filter by offer"
+                    class="select select-bordered w-64 focus:outline-none focus:border-[#eb6864]">
+              <option [ngValue]="null">Filter by offer</option>
+              <option *ngFor="let offre of listOffre" [ngValue]="offre">
+                {{offre.label}}
+              </option>
+            </select>
+          </div>
+      
+          <button class="btn btn-ghost h-[2.5rem]" 
+                  (click)="clearFilter()" 
+                  *ngIf="selectedOffre">
+            <i class="bi bi-x-circle"></i>
+            Clear Filter
+          </button>
+        </div>
+      </div>
+      
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr class="bg-base-200">
+              <th class="font-medium">ID</th>
+              <th class="font-medium">Label</th>
+              <th class="font-medium">Description</th>
+              <th class="font-medium">Day Number</th>
+              <th class="font-medium">Offer</th>
+              <th class="text-right" *ngIf="isAdmin">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let planing of filteredPlanings | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+                class="hover:bg-base-100/50">
+              <td>{{ planing.id }}</td>
+              <td class="font-medium">{{ planing.label }}</td>
+              <td class="text-gray-600">{{ planing.description }}</td>
+              <td>{{ planing.jourNumero }}</td>
+              <td>
+                <div *ngIf="planing.offre" class="badge badge-primary">
+                  {{ planing.offre.label }}
                 </div>
-                <div class="modal-body">
-                    <form [formGroup]="planingForm" (ngSubmit)="submitForm()">
-                        <div class="form-group mb-3">
-                            <label for="label" class="mb-2">Label</label>
-                            <input formControlName="label" type="text" class="form-control" id="label" placeholder="Enter planing label">
-                            <div *ngIf="planingForm.get('label')?.invalid && (planingForm.get('label')?.touched || planingForm.get('label')?.dirty)">
-                                <div *ngIf="planingForm.get('label')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="description" class="mb-2">Description</label>
-                            <textarea formControlName="description" class="form-control" id="description" placeholder="Enter planing description"></textarea>
-                            <div *ngIf="planingForm.get('description')?.invalid && (planingForm.get('description')?.touched || planingForm.get('description')?.dirty)">
-                                <div *ngIf="planingForm.get('description')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="jourNumero" class="mb-2">Jour Numero</label>
-                            <input formControlName="jourNumero" type="number" class="form-control" id="jourNumero" placeholder="Enter jour numero">
-                            <div *ngIf="planingForm.get('jourNumero')?.invalid && (planingForm.get('jourNumero')?.touched || planingForm.get('jourNumero')?.dirty)">
-                                <div *ngIf="planingForm.get('jourNumero')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="offre" class="mb-2">Offer</label>
-                            <select formControlName="offre" id="offre" class="form-control">
-                                <option *ngFor="let offre of listOffre" [ngValue]="offre">{{ offre.label }}</option>
-                            </select>
-                            <div *ngIf="planingForm.get('offre')?.invalid && (planingForm.get('offre')?.touched || planingForm.get('offre')?.dirty)">
-                                <div *ngIf="planingForm.get('offre')?.getError('required')" class="text-danger">
-                                    This field is Required!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer mt-5">
-                            <button [disabled]="planingForm.invalid" class="btn btn-primary">
-                                {{ planingForm.value.id ? 'Update' : 'Save' }}
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clearInput()">Close</button>
-                        </div>
-                    </form>
+              </td>
+              <td *ngIf="isAdmin">
+                <div class="flex justify-end gap-2">
+                  <button class="btn btn-ghost btn-sm" (click)="showPlaning(planing)" title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-ghost btn-sm" 
+                          (click)="editPlaning(planing)"
+                          title="Edit Planning">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-ghost btn-sm text-error" 
+                          (click)="deletePlaning(planing)"
+                          title="Delete Planning">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Pagination -->
+      <div class="border-t p-4 flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Showing {{ page}} of {{ totalPages }}
+        </span>
+        <pagination-controls 
+          (pageChange)="page = $event"
+          class="my-pagination"
+          [responsive]="true"
+          [previousLabel]="'Previous'"
+          [nextLabel]="'Next'"
+          [screenReaderPaginationLabel]="'Pagination'"
+          [screenReaderPageLabel]="'page'"
+          [screenReaderCurrentLabel]="'You are on page'">
+        </pagination-controls>
+      </div>
+    </div>
+  
+    <!-- Modal -->
+    <div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleModal()"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full">
+          <div class="p-4 border-b flex justify-between items-center">
+            <h3 class="text-xl font-bold">{{ planingForm.value.id ? 'Edit' : 'Add' }} Planning</h3>
+            <button title="-" class="btn btn-ghost btn-sm" (click)="toggleModal()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          
+          <form [formGroup]="planingForm" (ngSubmit)="submitForm()" class="p-6">
+            <div class="space-y-4">
+              <div class="form-control">
+                <label for="label" class="label">Label</label>
+                <input type="text" 
+                       id="label"
+                       formControlName="label" 
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                       placeholder="Enter planning label"/>
+                <div class="text-error text-sm mt-1" 
+                     *ngIf="planingForm.get('label')?.invalid && planingForm.get('label')?.touched">
+                  This field is required
+                </div>
+              </div>
+  
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Description</span>
+                  
+                </label>
+                <textarea formControlName="description" 
+                         class="textarea textarea-bordered min-h-[120px] w-full resize-y focus:outline-none focus:border-[#eb6864]" 
+                         placeholder="Enter a detailed description of the offer..."
+                         rows="4"></textarea>
+                 <div class="text-error text-sm mt-1" 
+                *ngIf="planingForm.get('description')?.invalid && planingForm.get('description')?.touched">
+                  This field is required
                 </div>
             </div>
+  
+              <div class="form-control">
+                <label for="jourNumero" class="label">Day Number</label>
+                <input type="number" 
+                       id="jourNumero"
+                       formControlName="jourNumero" 
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                       placeholder="Enter day number"/>
+                <div class="text-error text-sm mt-1" 
+                     *ngIf="planingForm.get('jourNumero')?.invalid && planingForm.get('jourNumero')?.touched">
+                  This field is required
+                </div>
+              </div>
+  
+              <div class="form-control">
+                <label for="offre" class="label">Offer</label>
+                <select id="offre"
+                        formControlName="offre" 
+                        class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
+                  <option [ngValue]="null">Select an offer</option>
+                  <option *ngFor="let offre of listOffre" [ngValue]="offre">
+                    {{offre.label}}
+                  </option>
+                </select>
+                <div class="text-error text-sm mt-1" 
+                     *ngIf="planingForm.get('offre')?.invalid && planingForm.get('offre')?.touched">
+                  This field is required
+                </div>
+              </div>
+            </div>
+  
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+              <button type="button" class="btn btn-ghost" (click)="toggleModal()">
+                Cancel
+              </button>
+              <button type="submit" 
+                      [disabled]="planingForm.invalid" 
+                      class="btn btn-primary">
+                {{ planingForm.value.id ? 'Update' : 'Save' }}
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>

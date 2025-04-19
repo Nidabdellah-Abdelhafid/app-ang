@@ -22,6 +22,16 @@ export class PhotoComponent implements OnInit {
   currentUser: any = null;
   isAdmin: boolean = false;
   page: number = 1;
+  itemsPerPage: number = 6;
+  totalPages: number = 0;
+  isModalOpen = false;
+  activeTab = 'country';
+  currentForm: any = null;
+  filterType: string = '';
+  selectedPays: number | null = null;
+  selectedPlaning: number | null = null;
+  selectedProgramme: number | null = null;
+  filteredPhotos: any;
 
   // Define photoForm to handle form controls
   photoForm = new FormGroup({
@@ -70,19 +80,76 @@ export class PhotoComponent implements OnInit {
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+    this.filteredPhotos = this.listPhoto || [];
   }
 
-  
+  filterPhotos() {
+    if (!this.filterType) {
+      this.filteredPhotos = this.listPhoto;
+      return;
+    }
+
+    this.filteredPhotos = this.listPhoto.filter((photo:any) => {
+      switch (this.filterType) {
+        case 'pays':
+          return this.selectedPays ? photo.pays?.id === this.selectedPays : true;
+        case 'planing':
+          return this.selectedPlaning ? photo.planing?.id === this.selectedPlaning : true;
+        case 'programme':
+          return this.selectedProgramme ? photo.programme?.id === this.selectedProgramme : true;
+        default:
+          return true;
+      }
+    });
+
+    this.page = 1; // Reset to first page when filtering
+    this.totalPages = Math.ceil(this.filteredPhotos.length / this.itemsPerPage);
+  }
+
+  clearFilters() {
+    this.filterType = '';
+    this.selectedPays = null;
+    this.selectedPlaning = null;
+    this.selectedProgramme = null;
+    this.filteredPhotos = this.listPhoto;
+    this.page = 1;
+    this.totalPages = Math.ceil(this.listPhoto.length / this.itemsPerPage);
+  }
   // Get all photos
   getPhoto() {
     this.photoService.getAll().subscribe({
       next: (res) => {
         this.listPhoto = res;
+        this.filteredPhotos = res;
+        this.totalPages = Math.ceil(this.listPhoto.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching photos', err);
+        Swal.fire('Error', 'Failed to load photos', 'error');
       }
     });
+  }
+
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) {
+      this.clearInput();
+    }
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+    switch(tab) {
+      case 'country':
+        this.currentForm = this.photoForm;
+        break;
+      case 'planning':
+        this.currentForm = this.photoFormPlaning;
+        break;
+      case 'program':
+        this.currentForm = this.photoFormProgramme;
+        break;
+    }
   }
 
   getPays() {
@@ -126,13 +193,17 @@ export class PhotoComponent implements OnInit {
 
   // Edit photo (open modal with photo data)
   editPhoto(photo: any) {
-    this.photoForm.setValue({
-      id: photo.id,
-      url: photo.url,
-      pays: photo.pays,  // Include the nested pays object
-      planing: photo.planing,
-      programme: photo.programme
-    });
+    if (photo.pays) {
+      this.setActiveTab('country');
+      this.photoForm.patchValue(photo);
+    } else if (photo.planing) {
+      this.setActiveTab('planning');
+      this.photoFormPlaning.patchValue(photo);
+    } else if (photo.programme) {
+      this.setActiveTab('program');
+      this.photoFormProgramme.patchValue(photo);
+    }
+    this.toggleModal();
   }
 
   // Delete photo
@@ -166,75 +237,42 @@ export class PhotoComponent implements OnInit {
   }
 
   submitForm() {
-    // Handle form submission for creating or updating photos
-    const photo = this.photoForm.value;
-    const photoFormPlaning = this.photoFormPlaning.value;
-    const photoFormProgramme = this.photoFormProgramme.value;
-  
-    // Check for photo, photoFormPlaning, or photoFormProgramme and handle accordingly
-    let formData: any = null;
-  
-    if (photo.pays != null) {
-      formData = photo; // Use photo data if pays is provided
-    } else if (photoFormPlaning.planing != null) {
-      formData = photoFormPlaning; // Use photoFormPlaning data if planingpl is provided
-    } else if (photoFormProgramme.programme != null) {
-      formData = photoFormProgramme; // Use photoFormProgramme data if programmepr is provided
-    }
-  
-    // If no valid form data is provided, return early
+    const formData = this.currentForm.value;
+    
     if (!formData) {
-      alert('No valid form data provided.');
+      Swal.fire('Error', 'No valid form data provided.', 'error');
       return;
     }
 
-    console.log("formData : " ,formData)
-  
-    // Determine whether to create or update based on the ID
-    if (formData.id) {
-      console.log(`${formData} aft : `, formData);
-      // Update existing photo or other form data
-      this.photoService.update(formData).subscribe({
-        next: (res) => {
-          this.getPhoto(); // Refresh the photo list
-          Swal.fire({
-            title: "Updated!",
-            text: "Your item has been updated.",
-            icon: "success"
-          });
-        },
-        error: (err) => {
-          console.error('Error updating photo', err);
-          alert('An error occurred while updating the photo.');
-        }
-      });
-    } else {
-      // Create new photo or other form data
-      this.photoService.create(formData).subscribe({
-        next: (res) => {
-          this.getPhoto(); // Refresh the photo list
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Photo created successfully!",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.photoForm.reset(); // Reset form after successful submission
-          this.photoFormPlaning.reset(); // Reset form after successful submission
-          this.photoFormProgramme.reset(); // Reset form after successful submission
-        },
-        error: (err) => {
-          console.error('Error creating photo', err);
-          alert('An error occurred while creating the photo.');
-        }
-      });
-    }
+    const operation = formData.id ? 
+      this.photoService.update(formData) : 
+      this.photoService.create(formData);
+
+    operation.subscribe({
+      next: (res) => {
+        this.getPhoto();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `Photo ${formData.id ? 'updated' : 'created'} successfully!`,
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.clearInput();
+        this.toggleModal();
+      },
+      error: (err) => {
+        console.error('Error with photo operation', err);
+        Swal.fire('Error', `Failed to ${formData.id ? 'update' : 'create'} photo`, 'error');
+      }
+    });
   }
   
 
   clearInput() {
-    // Reset form fields when modal is closed
     this.photoForm.reset();
+    this.photoFormPlaning.reset();
+    this.photoFormProgramme.reset();
+    this.setActiveTab('country');
   }
 }

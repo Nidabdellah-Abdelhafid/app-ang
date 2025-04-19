@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AddUserComponent } from './components/add-user/add-user.component';
@@ -32,6 +32,7 @@ import { NotificationComponent } from './components/notification/notification/no
 import { MessageComponent } from './components/message/message/message.component';
 import { FactureComponent } from './components/facture/facture/facture.component';
 import { HomePageComponent } from './components/partials/home-page/home-page.component';
+import { CeilPipe } from './pipes/ceil.pipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,7 +58,8 @@ import { HomePageComponent } from './components/partials/home-page/home-page.com
     NotificationComponent,
     MessageComponent,
     FactureComponent,
-    HomePageComponent
+    HomePageComponent,
+    CeilPipe
   ],
   imports: [
     BrowserModule,
@@ -66,7 +68,8 @@ import { HomePageComponent } from './components/partials/home-page/home-page.com
     HttpClientModule,
     NgxPaginationModule,
     ToastrModule.forRoot(),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule
     
   ],
   providers: [{

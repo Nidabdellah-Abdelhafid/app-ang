@@ -1,91 +1,133 @@
-<div class="row">
-    <div class="col-md-4 mt-5 mx-auto">
-        <form [formGroup]="userdataform" (ngSubmit)="register()">
-            <div class="form-group mb-3">
-                <label for="fullname">Full Name</label>
-                <input formControlName="fullname" type="text" class="form-control" id="fullname">
-                <div
-                    *ngIf="userdataform.get('fullname')?.invalid && (userdataform.get('fullname')?.touched || userdataform.get('fullname')?.dirty)">
-                    <div *ngIf="userdataform.get('fullname')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                </div>
+<div class="max-w-4xl mx-auto p-6">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Register</h2>
+      
+      <form [formGroup]="userdataform" (ngSubmit)="register()" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Left Column -->
+          <div class="space-y-6">
+            <!-- Full Name -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text font-medium">Full Name</span>
+              </label>
+              <input type="text" formControlName="fullname" 
+                     class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                     placeholder="Enter your full name"/>
+              <div *ngIf="userdataform.get('fullname')?.invalid && (userdataform.get('fullname')?.touched || userdataform.get('fullname')?.dirty)"
+                   class="text-sm text-error mt-1">
+                <span *ngIf="userdataform.get('fullname')?.getError('required')">Full name is required</span>
+              </div>
+            </div>
+  
+            <!-- Email -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text font-medium">Email Address</span>
+              </label>
+              <input type="email" formControlName="email" 
+                     class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                     placeholder="you@example.com"/>
+              <div *ngIf="userdataform.get('email')?.invalid && (userdataform.get('email')?.touched || userdataform.get('email')?.dirty)"
+                   class="text-sm text-error mt-1">
+                <span *ngIf="userdataform.get('email')?.getError('required')">Email is required</span>
+                <span *ngIf="userdataform.get('email')?.getError('email')">Please enter a valid email address</span>
+              </div>
+              <div *ngIf="emailUsed" class="text-sm text-error mt-1">{{ emailUsed }}</div>
+            </div>
+  
+            <!-- Password -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text font-medium">Password</span>
+              </label>
+              <input type="password" formControlName="password" 
+                     class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                     placeholder="••••••••"/>
+              <div *ngIf="userdataform.get('password')?.invalid && (userdataform.get('password')?.touched || userdataform.get('password')?.dirty)"
+                   class="text-sm text-error mt-1">
+                <span *ngIf="userdataform.get('password')?.getError('required')">Password is required</span>
+                <span *ngIf="userdataform.get('password')?.getError('minlength')">Password must be at least 8 characters</span>
+              </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label for="email">Email</label>
-                <input formControlName="email" type="text" class="form-control" id="email">
-                <div
-                    *ngIf="userdataform.get('email')?.invalid && (userdataform.get('email')?.touched || userdataform.get('email')?.dirty)">
-                    <div *ngIf="userdataform.get('email')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                    <div *ngIf="userdataform.get('email')?.getError('email')" class="text-primary">
-                        This field should be an email address!
-                    </div>
+            <!-- Phone Number -->
+            <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text font-medium">Phone Number</span>
+                </label>
+                <input type="tel" formControlName="telephone" 
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                       placeholder="+1 (555) 000-0000"/>
+                <div *ngIf="userdataform.get('telephone')?.invalid && (userdataform.get('telephone')?.touched || userdataform.get('telephone')?.dirty)"
+                     class="text-sm text-error mt-1">
+                  <span *ngIf="userdataform.get('telephone')?.getError('required')">Phone number is required</span>
                 </div>
-
-                <div *ngIf="emailUsed" class="text-danger mt-2">
-                    {{ emailUsed }}
-                </div>
+              </div>
+          </div>
+  
+          <!-- Right Column -->
+          <div class="space-y-6">
+            <!-- Photo Upload -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text font-medium">Profile Photo</span>
+              </label>
+              <div class="flex items-center justify-center w-full">
+                <label class="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all
+                            border-gray-300 hover:border-[#eb6864] w-full">
+                  <div class="flex flex-col items-center justify-center pt-5 pb-6" *ngIf="!imagePreview">
+                    <i class="bi bi-upload text-4xl text-gray-500 mb-4"></i>
+                    <p class="mb-2 text-sm text-gray-500">Upload a photo of your face</p>
+                    <p class="text-xs text-gray-500">Make sure your face is clearly visible</p>
+                    <p class="text-xs text-gray-500">JPG, JPEG, and PNG (MAX. 800x400px)</p>
+                  </div>
+                  <div class="relative w-56 h-56 overflow-hidden rounded-lg mx-auto" *ngIf="imagePreview">
+                    <img [src]="imagePreview" class="max-h-48 mx-auto" alt="Preview">
+                    <button type="button" class="absolute top-0 right-0 bg-[#eb6864] p-2 rounded-full text-white"
+                            (click)="removeImage($event)">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                  <input type="file" 
+                         formControlName="userPhoto"
+                         (change)="onFileChange($event)"
+                         class="hidden" 
+                         accept="image/*"/>
+                </label>
+              </div>
+              <div *ngIf="fileError" class="text-sm text-error mt-1">{{ fileError }}</div>
             </div>
-
-            <div class="form-group mb-3">
-                <label for="password">Password</label>
-                <input formControlName="password" type="password" class="form-control" id="password">
-                <div
-                    *ngIf="userdataform.get('password')?.invalid && (userdataform.get('password')?.touched || userdataform.get('password')?.dirty)">
-                    <div *ngIf="userdataform.get('password')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                    <div *ngIf="userdataform.get('password')?.getError('minlength')" class="text-primary">
-                        This field should be at least 8 characters!
-                    </div>
+  
+            <!-- Contact Information -->
+            <div class="grid grid-cols-1 gap-6">
+              
+  
+              <!-- Country -->
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text font-medium">Country</span>
+                </label>
+                <input type="text" formControlName="pays" 
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                       placeholder="Enter your country"/>
+                <div *ngIf="userdataform.get('pays')?.invalid && (userdataform.get('pays')?.touched || userdataform.get('pays')?.dirty)"
+                     class="text-sm text-error mt-1">
+                  <span *ngIf="userdataform.get('pays')?.getError('required')">Country is required</span>
                 </div>
+              </div>
             </div>
-
-            <div class="form-group mb-3">
-                <label for="userPhoto">User Photo</label>
-                <input formControlName="userPhoto" type="file" class="form-control" id="userPhoto"
-                    (change)="onFileChange($event)">
-                <div *ngIf="fileError" class="text-danger mt-2">
-                    {{ fileError }}
-                </div>
-                <div
-                    *ngIf="userdataform.get('userPhoto')?.invalid && (userdataform.get('userPhoto')?.touched || userdataform.get('userPhoto')?.dirty)">
-
-                    <div *ngIf="userdataform.get('userPhoto')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group mb-3">
-                <label for="telephone">Phone Numebr</label>
-                <input formControlName="telephone" type="text" class="form-control" id="telephone">
-                <div
-                    *ngIf="userdataform.get('telephone')?.invalid && (userdataform.get('telephone')?.touched || userdataform.get('telephone')?.dirty)">
-                    <div *ngIf="userdataform.get('telephone')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group mb-3">
-                <label for="pays">Pays</label>
-                <input formControlName="pays" type="text" class="form-control" id="pays">
-                <div
-                    *ngIf="userdataform.get('pays')?.invalid && (userdataform.get('pays')?.touched || userdataform.get('pays')?.dirty)">
-                    <div *ngIf="userdataform.get('pays')?.getError('required')" class="text-primary">
-                        This field is Required!
-                    </div>
-                </div>
-            </div>
-
-
-
-
-            <button [disabled]="userdataform.invalid" class="btn btn-block btn-primary col-12">Register</button>
-        </form>
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <div class="mt-8">
+          <button type="submit" 
+                  [disabled]="userdataform.invalid" 
+                  class="btn btn-primary w-full">
+            Register
+          </button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>

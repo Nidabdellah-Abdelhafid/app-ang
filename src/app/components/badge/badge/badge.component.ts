@@ -13,7 +13,9 @@ import { JwtTokenService } from 'src/app/services/jwt-token.service';
 export class BadgeComponent implements OnInit {
   listBadge: any;
   page: number = 1;
-
+  itemsPerPage: number = 6;
+  totalPages: number = 0;
+  isModalOpen: boolean = false;
   currentUser: any = null;
   isAdmin: boolean = false;
   constructor(private badgeService: BadgeService,
@@ -36,13 +38,24 @@ export class BadgeComponent implements OnInit {
     });
   }
 
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) {
+      this.clearInput();
+    }
+  }
+
+  // Update getBadge method
   getBadge() {
     this.badgeService.getAll().subscribe({
       next: (res) => {
         this.listBadge = res;
+        this.totalPages = Math.ceil(this.listBadge.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching badges', err);
+        this.listBadge = [];
+        this.totalPages = 1;
       }
     });
   }
@@ -52,13 +65,10 @@ export class BadgeComponent implements OnInit {
   }
 
   editBadge(badge: any) {
-    this.badgeForm.setValue({
-      id: badge.id,       
-      label: badge.label, 
-    });
+    this.badgeForm.patchValue(badge);
+    this.toggleModal();
   }
 
-  
   deleteBadge(badge: any) {
     Swal.fire({
       title: "Are you sure?",
@@ -103,6 +113,7 @@ export class BadgeComponent implements OnInit {
       this.badgeService.update(badge).subscribe({
         next: (res) => {
           this.getBadge(); 
+          this.toggleModal();
           Swal.fire({
               title: "Updated!",
               text: "Your item has been updated.",
@@ -119,6 +130,7 @@ export class BadgeComponent implements OnInit {
       this.badgeService.create(badge).subscribe({
         next: (res) => {
           this.getBadge(); 
+          this.toggleModal();
           Swal.fire({
             position: "top-end",
             icon: "success",

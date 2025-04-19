@@ -1,46 +1,94 @@
-<div class="container mt-4">
-    <p>list-user works!</p>
-  
-    <!-- Pagination -->
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Photo</th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Phone Number</th>
-          <th>Pays</th>
-          <th>Roles</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 5, currentPage: page }">
-          <td>{{ user.id }}</td>
-          <td>
-            <img *ngIf="user?.userPhoto" 
-           [src]="decode(user?.userPhoto)"
-           class="img-fluid rounded-circle w-25 h-25" 
-           
-           alt="User Image">
-          </td>
-          <td>{{ user.fullname }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.telephone }}</td>
-          <td>{{ user.pays }}</td>
-          <td>
-            <ul>
-              <li *ngFor="let role of user.appRoles">{{ role.roleName }}</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <!-- Pagination Controls (Centered) -->
-    <div class="d-flex justify-content-center">
-      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+<div class="p-6">
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="p-6 border-b">
+      <h2 class="text-2xl font-bold text-gray-800">Users Management</h2>
+      <p class="text-sm text-gray-600 mt-1">Manage and monitor user accounts</p>
     </div>
 
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr class="bg-base-200">
+            <th class="text-left p-4 font-medium text-gray-600">User</th>
+            <th class="text-left p-4 font-medium text-gray-600">Contact</th>
+            <th class="text-left p-4 font-medium text-gray-600">Location</th>
+            <th class="text-left p-4 font-medium text-gray-600">Roles</th>
+            <th class="text-left p-4 font-medium text-gray-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 5, currentPage: page }"
+              class="border-b hover:bg-base-100/50">
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="avatar">
+                  <div class="w-20 h-20 mx-auto overflow-hidden rounded-full ring ring-primary/20">
+                    <img *ngIf="user?.userPhoto" 
+                         [src]="decode(user?.userPhoto)"
+                         [alt]="user.fullname"
+                         class="my-auto mx-auto" alt=""/>
+                  </div>
+                </div>
+                <div>
+                  <div class="font-medium">{{ user.fullname }}</div>
+                  <div class="text-sm text-gray-500">{{ user.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="text-sm">
+                <div class="flex items-center gap-1 text-gray-600">
+                  <i class="bi bi-telephone text-gray-400"></i>
+                  {{ user.telephone }}
+                </div>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-1 text-sm text-gray-600">
+                <i class="bi bi-geo-alt text-gray-400"></i>
+                {{ user.pays }}
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let role of user.appRoles" 
+                      class="badge badge-primary badge-sm">
+                  {{ role.roleName }}
+                </span>
+              </div>
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <button class="btn btn-ghost btn-sm" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-ghost btn-sm text-error" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between border-t p-4">
+      <div class="text-sm text-gray-500">
+        Showing <span class="font-medium">5</span> of <span class="font-medium">{{ listUsers.length }}</span> users
+      </div>
+      <pagination-controls 
+        (pageChange)="page = $event"
+        class="my-pagination"
+        [responsive]="true"
+        [previousLabel]="'Previous'"
+        [nextLabel]="'Next'"
+        [screenReaderPaginationLabel]="'Pagination'"
+        [screenReaderPageLabel]="'page'"
+        [screenReaderCurrentLabel]="'You are on page'">
+      </pagination-controls>
+    </div>
   </div>
-  
+</div>

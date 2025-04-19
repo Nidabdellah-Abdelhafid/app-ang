@@ -14,6 +14,9 @@ export class PaysComponent implements OnInit {
   listPays: any;
   page: number = 1;currentUser: any = null;
   isAdmin: boolean = false;
+  isPaysModalOpen: boolean = false;
+  itemsPerPage: number = 5;
+  totalPages: number = 0;
 
   constructor(private paysService: PaysService,
     private accountService: AccountService,
@@ -46,6 +49,7 @@ export class PaysComponent implements OnInit {
     this.paysService.getAll().subscribe({
       next: (res) => {
         this.listPays = res;
+        this.totalPages = Math.ceil(this.listPays.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching countries', err);
@@ -71,7 +75,12 @@ export class PaysComponent implements OnInit {
       reviews: pays.reviews
     });
   }
-
+  toggleModal() {
+    this.isPaysModalOpen = !this.isPaysModalOpen;
+    if (!this.isPaysModalOpen) {
+      this.clearInput();
+    }
+  }
   // Delete country
   deletePays(pays: any) {
     Swal.fire({
@@ -112,7 +121,8 @@ submitForm() {
   if (pays.id) {
     this.paysService.update(pays).subscribe({
       next: (res) => {
-        this.getPays(); // Refresh the country list
+        this.getPays();
+        this.toggleModal();
         Swal.fire({
           title: "Updated!",
           text: "Your item has been updated.",
@@ -127,7 +137,8 @@ submitForm() {
   } else {
     this.paysService.create(pays).subscribe({
       next: (res) => {
-        this.getPays(); // Refresh the country list
+        this.getPays(); 
+        this.toggleModal();
         Swal.fire({
           position: "top-end",
           icon: "success",

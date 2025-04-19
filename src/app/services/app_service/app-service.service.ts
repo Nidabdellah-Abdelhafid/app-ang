@@ -1,10 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+interface Badge {
+  id: number;
+  label: string;
+}
+
+interface Theme {
+  id: number;
+  label: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class AppServiceService {
 
   constructor(
@@ -40,6 +51,18 @@ export class AppServiceService {
 
   addBadgeToOffre(data:any){
     return this.http.post(environment.apiUrl+"/api/offres/addBadgeToOffre",data);
+  }
+
+  getOffreBadges(offreId: number): Observable<Badge[]> {
+    return this.http.get<Badge[]>(`${environment.apiUrl}/api/offres/${offreId}/badges`).pipe(
+      map(response => Array.isArray(response) ? response : [])
+    );
+  }
+  
+  getOffreThemes(offreId: number): Observable<Theme[]> {
+    return this.http.get<Theme[]>(`${environment.apiUrl}/api/offres/${offreId}/themes`).pipe(
+      map(response => Array.isArray(response) ? response : [])
+    );
   }
 
 }

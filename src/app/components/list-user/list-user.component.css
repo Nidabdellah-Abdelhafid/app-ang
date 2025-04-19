@@ -1,0 +1,16 @@
+::ng-deep .my-pagination .ngx-pagination {
+    display: flex;
+    gap: 1px;
+  }
+  
+  ::ng-deep .my-pagination .ngx-pagination .current {
+    background-color: var(--primary);
+    color: white;
+    border-radius: 0.5rem;
+  }
+  
+  ::ng-deep .my-pagination .ngx-pagination a,
+  ::ng-deep .my-pagination .ngx-pagination button {
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }

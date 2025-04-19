@@ -15,6 +15,10 @@ export class ThemeComponent implements OnInit {
   page: number = 1;
   currentUser: any = null;
   isAdmin: boolean = false;
+  itemsPerPage: number = 6;
+  totalPages: number = 0;
+  isModalOpen: boolean = false;
+
   constructor(
     private themeService: ThemeService,
     private accountService: AccountService,
@@ -36,26 +40,35 @@ export class ThemeComponent implements OnInit {
     });
   }
 
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) {
+      this.clearInput();
+    }
+  }
+
+  // Update getTheme method
   getTheme() {
     this.themeService.getAll().subscribe({
       next: (res) => {
         this.listTheme = res;
+        this.totalPages = Math.ceil(this.listTheme.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error fetching themes', err);
+        this.listTheme = [];
+        this.totalPages = 1;
       }
     });
   }
 
   showTheme(theme: any) {
-    console.log('Show details for theme');
+    console.log('Show details for theme: ', theme);
   }
 
   editTheme(theme: any) {
-    this.themeForm.setValue({
-      id: theme.id,
-      label: theme.label,
-    });
+    this.themeForm.patchValue(theme);
+    this.toggleModal();
   }
 
 
@@ -103,6 +116,7 @@ export class ThemeComponent implements OnInit {
       this.themeService.update(theme).subscribe({
         next: (res) => {
           this.getTheme();
+          this.toggleModal();
           Swal.fire({
             title: "Updated!",
             text: "Your item has been updated.",
@@ -119,6 +133,7 @@ export class ThemeComponent implements OnInit {
       this.themeService.create(theme).subscribe({
         next: (res) => {
           this.getTheme();
+          this.toggleModal();
           Swal.fire({
             position: "top-end",
             icon: "success",

@@ -18,7 +18,8 @@ export class AddUserComponent implements OnInit {
   userPhoto: File | null = null;
   filePreview: string | null = null; // To display image preview
   fileError: string | null = null;
-  
+  imagePreview: string | null = null;
+
   userdataform = new FormGroup({
     fullname: new FormControl('', [
       Validators.required,
@@ -129,6 +130,8 @@ export class AddUserComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.filePreview = reader.result as string;
+        this.imagePreview = reader.result as string;
+        
       };
       reader.readAsDataURL(file);
  
@@ -136,6 +139,11 @@ export class AddUserComponent implements OnInit {
     }
   }
   
-  
+  removeImage(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.imagePreview = null;
+    this.userdataform.get('userPhoto')?.setValue(null);
+  }
   
 }
