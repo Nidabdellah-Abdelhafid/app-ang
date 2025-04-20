@@ -1,3 +1,20 @@
+<!-- Add this at the top of your drawer-content div, before the navbar -->
+<div *ngIf="showAlert" 
+     class="bg-error/10 border-l-4 border-error p-4 fixed top-0 right-0 m-4 z-50 rounded-lg shadow-lg animate-slide-in-right">
+  <div class="flex items-center gap-3">
+    <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+    <div class="flex-1">
+      <h3 class="text-error font-medium">API Connection Error</h3>
+      <p class="text-sm text-error/80">Unable to connect to the server. Please check your connection.</p>
+    </div>
+    <button title="-" class="btn btn-ghost btn-sm" (click)="showAlert = false">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Rest of your existing template -->
+
 <div class="drawer lg:drawer-open">
   <input name="d" id="my-drawer" type="checkbox" class="drawer-toggle" />
   

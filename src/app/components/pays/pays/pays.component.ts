@@ -17,6 +17,7 @@ export class PaysComponent implements OnInit {
   isPaysModalOpen: boolean = false;
   itemsPerPage: number = 5;
   totalPages: number = 0;
+  isLoading: boolean = false;
 
   constructor(private paysService: PaysService,
     private accountService: AccountService,
@@ -46,6 +47,7 @@ export class PaysComponent implements OnInit {
 
   // Get all countries
   getPays() {
+    this.isLoading = true;
     this.paysService.getAll().subscribe({
       next: (res) => {
         this.listPays = res;
@@ -53,13 +55,16 @@ export class PaysComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching countries', err);
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
 
   // Show country details
   showPays(pays: any) {
-    console.log('Show details for country',pays);
+    // console.log('Show details for country',pays);
   }
 
   // Edit country (open modal with country data)

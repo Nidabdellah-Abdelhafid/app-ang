@@ -10,7 +10,7 @@
           <li class="menu-title mt-4">
             <span class="text-xs font-medium text-gray-400 px-3">ADMIN</span>
           </li>
-          <li *ngFor="let item of ['users', 'roles', 'paiements', 'factures']">
+          <li *ngFor="let item of adminMenuItems">
             <a [routerLink]="'/' + item" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg">
               <i [class]="'bi bi-' + (item === 'users' ? 'people' : item === 'roles' ? 'shield' : item === 'paiements' ? 'credit-card' : 'receipt') + ' text-lg'"></i>
               <span class="capitalize">{{item}}</span>

@@ -32,6 +32,7 @@ export class PhotoComponent implements OnInit {
   selectedPlaning: number | null = null;
   selectedProgramme: number | null = null;
   filteredPhotos: any;
+  isLoading: boolean = false;
 
   // Define photoForm to handle form controls
   photoForm = new FormGroup({
@@ -117,6 +118,7 @@ export class PhotoComponent implements OnInit {
   }
   // Get all photos
   getPhoto() {
+    this.isLoading = true;
     this.photoService.getAll().subscribe({
       next: (res) => {
         this.listPhoto = res;
@@ -126,6 +128,9 @@ export class PhotoComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching photos', err);
         Swal.fire('Error', 'Failed to load photos', 'error');
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
@@ -188,7 +193,7 @@ export class PhotoComponent implements OnInit {
 
   // Show photo details
   showPhoto(photo: any) {
-    console.log('Show details for photo', photo);
+    // console.log('Show details for photo', photo);
   }
 
   // Edit photo (open modal with photo data)

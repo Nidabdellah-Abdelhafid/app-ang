@@ -37,6 +37,8 @@ export class OffreComponent implements OnInit {
   showOffreModal: boolean = false;
   filteredOffres: any;
   selectedPays: any = null;
+  isLoading: boolean = false;
+  
   constructor(
     private offreService: OffreService,
     private paysService: PaysService,
@@ -83,6 +85,7 @@ export class OffreComponent implements OnInit {
   }
 
   getOffre() {
+    this.isLoading = true;
     this.offreService.getAll().subscribe({
       next: (res) => {
         this.listOffre = [];
@@ -95,6 +98,9 @@ export class OffreComponent implements OnInit {
         this.listOffre = [];
         this.filteredOffres = [];
         this.calculateTotalPages();
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
@@ -343,12 +349,12 @@ export class OffreComponent implements OnInit {
 
   showOffre(offre: any) {
     this.selectedOffre = offre;
-    console.log("selected :",offre);
+    // console.log("selected :",offre);
     // Update the subscription handling
     this.offreService.getOffreBadges(offre.id).subscribe({
       next: (badges: any[]) => {
         this.offreBadges = badges;
-        console.log(this.offreBadges);
+        // console.log(this.offreBadges);
       },
       error: (err) => {
         console.error('Error fetching badges', err);
@@ -359,7 +365,8 @@ export class OffreComponent implements OnInit {
     this.offreService.getOffreThemes(offre.id).subscribe({
       next: (themes: any[]) => {
         this.offreThemes = themes;
-        console.log(this.offreThemes);
+        // console.log(this.offreThemes);
+        this.toggleShowOffreModal();
 
       },
       error: (err) => {
@@ -368,7 +375,6 @@ export class OffreComponent implements OnInit {
       }
     });
 
-    this.toggleShowOffreModal();
   }
 
   toggleShowOffreModal() {

@@ -9,8 +9,9 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 })
 export class ListUserComponent implements OnInit{
 
-  listUsers:any;
+  listUsers: any;
   page: number = 1;
+  isLoading: boolean = false;
 
   constructor(
     private userService:UserService,
@@ -20,9 +21,23 @@ export class ListUserComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.getUser();
+    
+  }
 
-    this.userService.getUsers().subscribe(res=>{
+  getUser(){
+    this.isLoading = true;
+    this.userService.getUsers().subscribe( {
+      next:(res)=>{
+      this.listUsers = [];
       this.listUsers = res;
+    },
+    error:(err)=>{
+      console.error('Error fetching users', err);
+    },
+    complete: () => {
+      this.isLoading = false;
+    }
     })
   }
 

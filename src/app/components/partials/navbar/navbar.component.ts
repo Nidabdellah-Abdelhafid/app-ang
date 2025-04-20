@@ -13,7 +13,7 @@ export class NavbarComponent implements OnInit {
 
   currentUser: any = null;
   isAdmin: boolean = false;  // To track if the user is an admin
-
+  adminMenuItems: string[] = ['users', 'roles', 'paiements', 'factures'];
   constructor(
     private authService: AuthService,
     private accountService: AccountService,

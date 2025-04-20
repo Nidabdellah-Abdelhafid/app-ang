@@ -58,7 +58,7 @@
                 </label>
                 <input type="tel" formControlName="telephone" 
                        class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
-                       placeholder="+1 (555) 000-0000"/>
+                       placeholder="+212 (00) 000-0000"/>
                 <div *ngIf="userdataform.get('telephone')?.invalid && (userdataform.get('telephone')?.touched || userdataform.get('telephone')?.dirty)"
                      class="text-sm text-error mt-1">
                   <span *ngIf="userdataform.get('telephone')?.getError('required')">Phone number is required</span>
@@ -97,6 +97,13 @@
                 </label>
               </div>
               <div *ngIf="fileError" class="text-sm text-error mt-1">{{ fileError }}</div>
+              <div
+              *ngIf="userdataform.get('userPhoto')?.invalid && (userdataform.get('userPhoto')?.touched || userdataform.get('userPhoto')?.dirty)">
+
+              <div *ngIf="userdataform.get('userPhoto')?.getError('required')" class="text-error">
+                  This field is Required!
+              </div>
+          </div>
             </div>
   
             <!-- Contact Information -->

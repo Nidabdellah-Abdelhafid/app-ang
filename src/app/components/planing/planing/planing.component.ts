@@ -23,6 +23,7 @@ export class PlaningComponent implements OnInit {
   isAdmin: boolean = false;
   filteredPlanings: any;
   selectedOffre: any = null;
+  isLoading: boolean = false;
 
   constructor(
     private planingService: PlaningService,
@@ -52,6 +53,7 @@ export class PlaningComponent implements OnInit {
   }
 
   getPlaning() {
+    this.isLoading = true;
     this.planingService.getAll().subscribe({
       next: (res) => {
         this.listPlaning = res;
@@ -60,6 +62,9 @@ export class PlaningComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching planings', err);
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
@@ -126,7 +131,7 @@ export class PlaningComponent implements OnInit {
         }
       });
     } else {
-      console.log('Sending data:', planing);
+      // console.log('Sending data:', planing);
       this.planingService.create(planing).subscribe({
         next: (res) => {
           this.getPlaning(); // Refresh the planing list
@@ -155,7 +160,7 @@ export class PlaningComponent implements OnInit {
   }
 
   showPlaning(planing: any) {
-    console.log('Show details for planing', planing);
+    // console.log('Show details for planing', planing);
   }
 
   editPlaning(planing: any) {

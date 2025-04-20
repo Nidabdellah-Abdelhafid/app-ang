@@ -25,6 +25,7 @@ export class ProgrammeComponent implements OnInit {
   selectedPlaning: any = null;
   currentUser: any = null;
   isAdmin: boolean = false;
+  isLoading: boolean = false;
   constructor(
     private programmeService: ProgrammeService,
     private planingService: PlaningService,
@@ -80,6 +81,7 @@ export class ProgrammeComponent implements OnInit {
 
   // Update getProgramme method
   getProgramme() {
+    this.isLoading = true;
     this.programmeService.getAll().subscribe({
       next: (res) => {
         this.listProgramme = res;
@@ -91,6 +93,9 @@ export class ProgrammeComponent implements OnInit {
         this.listProgramme = [];
         this.filteredProgrammes = [];
         this.totalPages = 1;
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
@@ -124,7 +129,7 @@ export class ProgrammeComponent implements OnInit {
     }
 
     const programme = this.programmeForm.value;
-    console.log('before Sending data:', programme);
+    // console.log('before Sending data:', programme);
 
     if (programme.id) {
       // console.log('Sending data:', programme);
@@ -144,7 +149,7 @@ export class ProgrammeComponent implements OnInit {
         }
       });
     } else {
-      console.log('Sending data:', programme);
+      // console.log('Sending data:', programme);
       this.programmeService.create(programme).subscribe({
         next: (res) => {
           this.getProgramme(); // Refresh the programme list
@@ -171,7 +176,7 @@ export class ProgrammeComponent implements OnInit {
   }
 
   showProgramme(programme: any) {
-    console.log('Show details for programme', programme);
+    // console.log('Show details for programme', programme);
   }
 
   editProgramme(programme: any) {

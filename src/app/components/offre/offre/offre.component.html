@@ -51,63 +51,94 @@
   
     <!-- Main Content Card -->
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="table table-zebra w-full">
-          <thead>
-            <tr class="bg-base-200">
-              <th class="font-medium">ID</th>
-              <th class="font-medium">Destination</th>
-              <th class="font-medium">Details</th>
-              <th class="font-medium">Price</th>
-              <th class="font-medium">Location</th>
-              <th class="font-medium">Country</th>
-              <th class="text-right" *ngIf="isAdmin">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let offre of filteredOffres | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-              class="hover:bg-base-100/50">
-              <td>{{ offre.id }}</td>
-              <td>
-                <div class="flex items-center gap-3">
-                  <div class="avatar">
-                    <div class="w-16 h-16 rounded-lg">
-                      <img [src]="offre.image" [alt]="offre.label" class="object-cover" alt=""/>
+      
+      <div class="overflow-x-auto" >
+        <div *ngIf="isLoading" class="flex justify-center items-center p-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+        <div [class.opacity-50]="isLoading">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr class="bg-base-200">
+                <th class="font-medium">ID</th>
+                <th class="font-medium">Destination</th>
+                <th class="font-medium">Details</th>
+                <th class="font-medium">Price</th>
+                <th class="font-medium">Location</th>
+                <th class="font-medium">Country</th>
+                <th class="font-medium">Themes</th>
+                <th class="font-medium">Badges</th>
+                <th class="text-right" *ngIf="isAdmin">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let offre of filteredOffres | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+                class="hover:bg-base-100/50">
+                <td>{{ offre.id }}</td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar">
+                      <div class="w-16 h-16 rounded-lg">
+                        <img [src]="offre.image" [alt]="offre.label" class="object-cover" alt=""/>
+                      </div>
                     </div>
+                    <span class="font-medium">{{ offre.label }}</span>
                   </div>
-                  <span class="font-medium">{{ offre.label }}</span>
-                </div>
-              </td>
-              <td class="max-w-xs">
-                <p class="text-sm text-gray-600 truncate">{{ offre.description }}</p>
-              </td>
-              <td>
-                <span class="font-medium text-primary">${{ offre.price }}</span>
-              </td>
-              <td class="text-sm">
-                <div class="flex items-center gap-1">
-                  <i class="bi bi-geo-alt text-primary"></i>
-                  {{ offre.latitude }}, {{ offre.longitude }}
-                </div>
-              </td>
-              <td>{{ offre?.pays['label'] }}</td>
-              <td *ngIf="isAdmin">
-                <div class="flex justify-end gap-2">
-                  <button title="View details" type="button" class="btn btn-ghost btn-sm" 
-                    (click)="showOffre(offre); toggleShowOffreModal()">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button title="-" type="button" class="btn btn-ghost btn-sm" (click)="editOffre(offre); toggleOfferModal()">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button title="-" type="button" class="btn btn-ghost btn-sm text-error" (click)="deleteOffre(offre)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </td>
+                <td class="max-w-xs">
+                  <p class="text-sm text-gray-600 truncate">{{ offre.description }}</p>
+                </td>
+                <td>
+                  <span class="font-medium text-primary">${{ offre.price }}</span>
+                </td>
+                <td class="text-sm">
+                  <div class="flex items-center gap-1">
+                    <i class="bi bi-geo-alt text-primary"></i>
+                    {{ offre.latitude }}, {{ offre.longitude }}
+                  </div>
+                </td>
+                <td>{{ offre?.pays['label'] }}</td>
+                <td>
+                  <div class="flex flex-wrap gap-1 w-28">
+                    <span *ngFor="let theme of offre.themes" 
+                          class="badge badge-secondary badge-sm">
+                      {{ theme.label }}
+                    </span>
+                    <span *ngIf="!offre.themes?.length" class="text-xs text-gray-400">
+                      No themes
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex flex-wrap gap-1 w-28">
+                    <span *ngFor="let badge of offre.badges" 
+                          class="badge badge-primary badge-sm">
+                      {{ badge.label }}
+                    </span>
+                    <span *ngIf="!offre.badges?.length" class="text-xs text-gray-400">
+                      No badges
+                    </span>
+                  </div>
+                </td>
+                <td *ngIf="isAdmin">
+                  <div class="flex justify-end gap-2">
+                    <button title="View details" type="button" class="btn btn-ghost btn-sm" 
+                      (click)="showOffre(offre)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button title="-" type="button" class="btn btn-ghost btn-sm" (click)="editOffre(offre); toggleOfferModal()">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button title="-" type="button" class="btn btn-ghost btn-sm text-error" (click)="deleteOffre(offre)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
       </div>
   
       <!-- Pagination -->

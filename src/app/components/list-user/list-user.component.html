@@ -8,7 +8,11 @@
 
     <!-- Table -->
     <div class="overflow-x-auto">
-      <table class="table table-zebra w-full">
+      <div *ngIf="isLoading" class="flex justify-center items-center p-8">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+      <div [class.opacity-50]="isLoading">
+        <table class="table table-zebra w-full">
         <thead>
           <tr class="bg-base-200">
             <th class="text-left p-4 font-medium text-gray-600">User</th>
@@ -72,14 +76,17 @@
           </tr>
         </tbody>
       </table>
+      </div>
+      
     </div>
 
     <!-- Pagination -->
     <div class="flex items-center justify-between border-t p-4">
       <div class="text-sm text-gray-500">
-        Showing <span class="font-medium">5</span> of <span class="font-medium">{{ listUsers.length }}</span> users
+        Showing <span class="font-medium">5</span> of <span class="font-medium">{{ listUsers?.length || 0 }}</span> users
       </div>
       <pagination-controls 
+        *ngIf="listUsers && listUsers.length > 0"
         (pageChange)="page = $event"
         class="my-pagination"
         [responsive]="true"

@@ -18,6 +18,7 @@ export class ThemeComponent implements OnInit {
   itemsPerPage: number = 6;
   totalPages: number = 0;
   isModalOpen: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private themeService: ThemeService,
@@ -49,6 +50,7 @@ export class ThemeComponent implements OnInit {
 
   // Update getTheme method
   getTheme() {
+    this.isLoading = true;
     this.themeService.getAll().subscribe({
       next: (res) => {
         this.listTheme = res;
@@ -58,12 +60,15 @@ export class ThemeComponent implements OnInit {
         console.error('Error fetching themes', err);
         this.listTheme = [];
         this.totalPages = 1;
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
 
   showTheme(theme: any) {
-    console.log('Show details for theme: ', theme);
+    // console.log('Show details for theme: ', theme);
   }
 
   editTheme(theme: any) {

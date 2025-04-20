@@ -78,7 +78,12 @@
   
     <!-- Main Content Card -->
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      
       <div class="overflow-x-auto">
+        <div *ngIf="isLoading" class="flex justify-center items-center p-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+        <div [class.opacity-50]="isLoading">
         <table class="table table-zebra w-full">
           <thead>
             <tr class="bg-base-200">
@@ -134,7 +139,9 @@
               </td>
             </tr>
           </tbody>
-        </table>
+        </table>  
+        </div>
+        
       </div>
   
       <!-- Pagination -->

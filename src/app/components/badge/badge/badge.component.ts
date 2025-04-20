@@ -18,6 +18,7 @@ export class BadgeComponent implements OnInit {
   isModalOpen: boolean = false;
   currentUser: any = null;
   isAdmin: boolean = false;
+  isLoading: boolean = false;
   constructor(private badgeService: BadgeService,
     private accountService: AccountService,
     private jwtTokenService: JwtTokenService,
@@ -47,6 +48,7 @@ export class BadgeComponent implements OnInit {
 
   // Update getBadge method
   getBadge() {
+    this.isLoading = true;
     this.badgeService.getAll().subscribe({
       next: (res) => {
         this.listBadge = res;
@@ -56,12 +58,15 @@ export class BadgeComponent implements OnInit {
         console.error('Error fetching badges', err);
         this.listBadge = [];
         this.totalPages = 1;
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
 
   showBadge(badge: any) {
-    console.log('Show details for badge');
+    // console.log('Show details for badge');
   }
 
   editBadge(badge: any) {
