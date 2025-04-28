@@ -35,4 +35,12 @@ export class AuthService {
       `${environment.apiUrl}/profile`
     )
    }
+
+   updateUser(id:number,userData:any){
+    return this.http.put(
+      `${environment.apiUrl}/profile/${id}`,
+      userData
+    )
+   }
+
 }

@@ -61,7 +61,7 @@
                     </div>
                     <div class="chat-bubble">{{message.contenu}}</div>
                     <div class="chat-footer opacity-50">Seen at {{message.date | date:'shortTime'}}</div>
-                </div>git 
+                </div>
 
                 <!-- Sent Messages -->
                 <div *ngIf="message.sender?.email === currentUserEmail" class="chat chat-end">

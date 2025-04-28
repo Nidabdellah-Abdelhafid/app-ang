@@ -25,6 +25,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ]
 })
 export class LoginComponent implements OnInit {
+  isLoading: boolean = false;
 
   loginForm = new FormGroup({
     email: new FormControl('', [
@@ -58,10 +59,18 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    this.isLoading=true;
+
     const formValue = this.loginForm.value as { email: string, password: string };
     this.authService.login(formValue).subscribe({
-      next: (res) => this.handleResponse(res),
-      error: (err) => this.handleError(err)
+      next: (res) => {
+        this.handleResponse(res)
+        this.isLoading=false;
+      },
+      error: (err) => {
+        this.handleError(err)
+       this.isLoading=false;
+      }
     });
   }
 
@@ -84,5 +93,6 @@ export class LoginComponent implements OnInit {
       this.errorMessage = 'An unexpected error occurred. Please try again.';
       this.toastr.error('An unexpected error occurred. Please try again.', 'Error');  // Show error toast
     }
+    
   }
 }

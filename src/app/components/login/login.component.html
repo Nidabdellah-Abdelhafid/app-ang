@@ -68,12 +68,18 @@
         </div> -->
   
         <!-- Submit Button -->
-        <button type="submit" 
+        <button *ngIf="!isLoading" type="submit" 
                 [disabled]="loginForm.invalid"
                 class="btn btn-error w-full gap-2">
           <i class="bi bi-box-arrow-in-right"></i>
           Sign in
         </button>
+          <button *ngIf="isLoading"
+                  type="button"
+                  class="w-full">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          Loading ...
+          </button>
   
         <!-- Register Link -->
         <p class="text-center text-sm text-gray-600">

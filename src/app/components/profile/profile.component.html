@@ -1,6 +1,9 @@
 <div class="p-6">
   <div class="bg-white rounded-xl shadow-lg overflow-hidden max-h-[80vh]">
-    <div class="md:flex">
+    <div *ngIf="isloading" class="flex justify-center items-center p-8">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+    <div class="md:flex" *ngIf="!isloading">
       <!-- Profile Image Section -->
       <div class="md:w-1/3 bg-gray-50 p-auto flex items-center justify-center">
         <div class="relative w-full h-full rounded-l-md overflow-hidden shadow-lg">
@@ -8,10 +11,7 @@
                [src]="decode(authUser?.userPhoto)"
                class="w-full h-full object-cover" 
                alt="User Image">
-          <img *ngIf="!authUser?.userPhoto" 
-               src="https://img.freepik.com/photos-gratuite/rendu-3d-personnage-dessin-anime-lunettes-veste_1142-51310.jpg?t=st=1735226402~exp=1735230002~hmac=f71e723bd522924a9fb47eb9fda191b71efd4cebaf7204d05f5b7e4a865f33f1&w=740" 
-               class="w-full h-full object-cover" 
-               alt="Default Profile">
+          
         </div>
       </div>
 
@@ -22,6 +22,16 @@
           <div>
             <h2 class="text-2xl font-bold text-gray-800">{{authUser?.fullname}}</h2>
             <p class="text-gray-600">{{authUser?.email}}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">
+              <i class="bi bi-telephone text-gray-400"></i>
+              {{authUser?.telephone}}
+            </p>
+            <p class="text-gray-600">
+              <i class="bi bi-geo-alt text-gray-400"></i>
+              {{authUser?.pays}}
+            </p>
           </div>
 
           <!-- Roles Section -->
@@ -45,17 +55,115 @@
 
           <!-- Action Buttons -->
           <div class="flex gap-3 pt-4">
-            <button class="btn btn-primary btn-sm gap-2">
+            <button class="btn btn-primary btn-sm gap-2" (click)="openEditModal()">
               <i class="bi bi-pencil"></i>
               Edit Profile
-            </button>
-            <button class="btn btn-ghost btn-sm gap-2">
-              <i class="bi bi-key"></i>
-              Change Password
             </button>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex min-h-screen items-center justify-center p-4">
+      <div class="fixed inset-0 bg-black opacity-50" (click)="closeEditModal()"></div>
+      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+      <h3 class="font-bold text-lg mb-4">Edit Profile</h3>
+      <div class="">
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" >
+        <div class="flex flex-col md:flex-row space-x-6">
+        <div class="w-full">
+        <div class="form-control ">
+          <label class="label">
+            <span class="label-text font-medium">Profile Photo</span>
+          </label>
+          <div class="flex items-center justify-center w-full">
+            <label class="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all
+                        border-gray-300 hover:border-[#eb6864] w-full">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6" *ngIf="!imagePreview">
+                <i class="bi bi-upload text-4xl text-gray-500 mb-4"></i>
+                <p class="mb-2 text-sm text-gray-500">Upload a photo of your face</p>
+                <p class="text-xs text-gray-500">Make sure your face is clearly visible</p>
+                <p class="text-xs text-gray-500">JPG, JPEG, and PNG (MAX. 800x400px)</p>
+              </div>
+              <div class="relative w-56 h-56 overflow-hidden rounded-lg mx-auto" *ngIf="imagePreview">
+                <img [src]="imagePreview" class="max-h-48 mx-auto" alt="Preview">
+                <button type="button" class="absolute top-0 right-0 bg-[#eb6864] p-2 rounded-full text-white"
+                        (click)="removeImage($event)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <input type="file" 
+                     (change)="onFileSelected($event)"
+                     class="hidden" 
+                     accept="image/*"/>
+            </label>
+          </div>
+          <div *ngIf="fileError" class="text-sm text-error mt-1">{{ fileError }}</div>
+          
+        </div>
+        </div>
+        <div class="w-full" >
+
+        <!-- Full Name -->
+        <div class="form-control mb-4">
+          <label class="label">Full Name</label>
+          <input type="text" 
+                 class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                 formControlName="fullname"
+                 placeholder="Enter your full name"
+                 required>
+                 <div *ngIf="editForm.get('fullname')?.invalid && (editForm.get('fullname')?.touched || editForm.get('fullname')?.dirty)"
+                   class="text-sm text-error mt-1">
+                <span *ngIf="editForm.get('fullname')?.getError('required')">Full name is required</span>
+              </div>
+        </div>
+
+        <!-- Telephone -->
+        <div class="form-control mb-4">
+          <label class="label">Telephone</label>
+          <input type="tel" 
+                 class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                 formControlName="telephone"
+                 placeholder="Enter your telephone"
+                 required>
+                 <div *ngIf="editForm.get('telephone')?.invalid && (editForm.get('telephone')?.touched || editForm.get('telephone')?.dirty)"
+                     class="text-sm text-error mt-1">
+                  <span *ngIf="editForm.get('telephone')?.getError('required')">Phone number is required</span>
+                </div>
+        </div>
+
+        <!-- Country -->
+        <div class="form-control mb-4">
+          <label class="label">Country</label>
+          <input type="text" 
+                 class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                 formControlName="pays"
+                 placeholder="Enter your country"
+                 required>
+                 <div *ngIf="editForm.get('pays')?.invalid && (editForm.get('pays')?.touched || editForm.get('pays')?.dirty)"
+                     class="text-sm text-error mt-1">
+                  <span *ngIf="editForm.get('pays')?.getError('required')">Country is required</span>
+                </div>
+        </div>
+      </div>
+    </div>
+        <div class="modal-action">
+          <button *ngIf="!isUpLoading"
+           type="submit" class="btn btn-primary" [disabled]="editForm.invalid" >Save Changes</button>
+           <button *ngIf="isUpLoading"
+                  type="button"
+                  class="w-full">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          Loading ...
+          </button>
+          <button type="button" class="btn" (click)="closeEditModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+    </div>
+  </div>
   </div>
 </div>

@@ -19,6 +19,7 @@ export class AddUserComponent implements OnInit {
   filePreview: string | null = null; // To display image preview
   fileError: string | null = null;
   imagePreview: string | null = null;
+  isLoading: boolean = false;
 
   userdataform = new FormGroup({
     fullname: new FormControl('', [
@@ -55,6 +56,7 @@ export class AddUserComponent implements OnInit {
   }
 
   register() {
+    this.isLoading=true;
     const formValue = this.userdataform.value as User;
     const formData = new FormData();
     
@@ -83,10 +85,13 @@ export class AddUserComponent implements OnInit {
                 timer: 1500
               });
             this.handleResponse();  
+            this.isLoading= false;
           },
           error: (roleError) => {
             console.log("Role assignment failed:", roleError);
-          }
+            this.isLoading= false;
+          },
+          
         });
       },
       error: (error) => {
@@ -95,6 +100,7 @@ export class AddUserComponent implements OnInit {
         } else {
           alert('An unknown error occurred during user creation.');
         }
+        this.isLoading= false;
       }
     });
   }
