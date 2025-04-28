@@ -85,7 +85,7 @@ export class ProfileComponent implements OnInit{
   }
 
 
-    onFileSelected(event: any) {
+  onFileSelected(event: any) {
     let file = event.target.files[0];
     if (file) {
       const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -95,6 +95,7 @@ export class ProfileComponent implements OnInit{
         this.fileError = 'Only JPG, JPEG, and PNG files are allowed.';
         this.editForm.get("userPhoto")?.reset();
         this.filePreview = null;
+        this.imagePreview = null;
         return;
       }
 
@@ -102,24 +103,31 @@ export class ProfileComponent implements OnInit{
         this.fileError = 'File size must be less than 2MB.';
         this.editForm.get("userPhoto")?.reset();
         this.filePreview = null;
+        this.imagePreview = null;
         return;
       }
 
       this.fileError = null;
 
+      // Create two readers: one for preview, one for form data
+      const previewReader = new FileReader();
+      const dataReader = new FileReader();
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.filePreview = reader.result as string;
-        this.imagePreview = reader.result as string;
+      // Handle preview
+      previewReader.onload = () => {
+        this.imagePreview = previewReader.result as string;
+      };
+      previewReader.readAsDataURL(file);
 
-        const arrayBuffer = reader.result as ArrayBuffer;
+      // Handle form data
+      dataReader.onload = () => {
+        const arrayBuffer = dataReader.result as ArrayBuffer;
         const bytes = new Uint8Array(arrayBuffer);
         this.editForm.patchValue({
           userPhoto: Array.from(bytes)
         });
       };
-      reader.readAsArrayBuffer(file);
+      dataReader.readAsArrayBuffer(file);
     }
   }
 
