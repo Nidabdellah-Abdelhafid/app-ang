@@ -151,6 +151,8 @@ export class ProfileComponent implements OnInit{
             showConfirmButton: false
           });
           this.isUpLoading=false;
+          this.imagePreview = null;
+
         },
         error: (error) => {
           this.isUpLoading=false;
