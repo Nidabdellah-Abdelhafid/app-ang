@@ -23,7 +23,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 5, currentPage: page }"
+          <tr *ngFor="let user of listUsers | paginate: { itemsPerPage: 4, currentPage: page }"
               class="border-b hover:bg-base-100/50">
             <td class="p-4">
               <div class="flex items-center gap-3">
@@ -83,7 +83,7 @@
     <!-- Pagination -->
     <div class="flex items-center justify-between border-t p-4">
       <div class="text-sm text-gray-500">
-        Showing <span class="font-medium">5</span> of <span class="font-medium">{{ listUsers?.length || 0 }}</span> users
+        Showing <span class="font-medium">4</span> of <span class="font-medium">{{ listUsers?.length || 0 }}</span> users
       </div>
       <pagination-controls 
         *ngIf="listUsers && listUsers.length > 0"
