@@ -36,6 +36,7 @@ export class PlaningComponent implements OnInit {
       label: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
       jourNumero: new FormControl('', [Validators.required]),
+      mapPlaningImage: new FormControl('', [Validators.required]),
       offre: new FormControl(null, [Validators.required]),
     });
   }

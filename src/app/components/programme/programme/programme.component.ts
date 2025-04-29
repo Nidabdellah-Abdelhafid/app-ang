@@ -37,7 +37,7 @@ export class ProgrammeComponent implements OnInit {
       heure: new FormControl('', [Validators.required]),
       label: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
-      planing_programmes: new FormControl(null, [Validators.required]),
+      planing_programmes: new FormControl(null, [Validators.required])
     });
   }
 

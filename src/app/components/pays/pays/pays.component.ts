@@ -32,8 +32,14 @@ export class PaysComponent implements OnInit {
     continent: new FormControl('', [Validators.required]),
     latitude: new FormControl(null, [Validators.required]),
     longitude: new FormControl(null, [Validators.required]),
-    reviews: new FormControl(null, [Validators.required])
-
+    reviews: new FormControl(null, [Validators.required]),
+    visa: new FormControl(false),
+    dureeDuVol: new FormControl('', [Validators.required]),
+    heureLocale: new FormControl('', [Validators.required]),
+    monnaieLocale: new FormControl('', [Validators.required]),
+    langueParlee: new FormControl('', [Validators.required]),
+    vaccinsNecessaires: new FormControl(false),
+    mapImage: new FormControl('', [Validators.required]),
   });
 
   ngOnInit(): void {
@@ -77,7 +83,14 @@ export class PaysComponent implements OnInit {
       continent: pays.continent,
       latitude: pays.latitude,
       longitude: pays.longitude,
-      reviews: pays.reviews
+      reviews: pays.reviews,
+      visa: pays.visa,
+      dureeDuVol: pays.dureeDuVol,
+      heureLocale: pays.heureLocale,
+      monnaieLocale: pays.monnaieLocale,
+      langueParlee: pays.langueParlee,
+      vaccinsNecessaires: pays.vaccinsNecessaires,
+      mapImage: pays.mapImage,
     });
   }
   toggleModal() {
@@ -122,7 +135,7 @@ submitForm() {
   }
 
   const pays = this.paysForm.value;
-
+  // console.log(pays);
   if (pays.id) {
     this.paysService.update(pays).subscribe({
       next: (res) => {

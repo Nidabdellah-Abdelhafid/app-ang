@@ -51,6 +51,7 @@
                 <th class="font-medium">Label</th>
                 <th class="font-medium">Description</th>
                 <th class="font-medium">Day Number</th>
+                <th class="font-medium">Map Planing</th>
                 <th class="font-medium">Offer</th>
                 <th class="text-right" *ngIf="isAdmin">Actions</th>
               </tr>
@@ -62,6 +63,16 @@
                 <td class="font-medium">{{ planing.label }}</td>
                 <td class="text-gray-600">{{ planing.description }}</td>
                 <td>{{ planing.jourNumero }}</td>
+                <td>
+                  <div class="avatar" *ngIf="planing.mapPlaningImage">
+                    <div class="w-16 h-16 rounded-lg">
+                      <img alt="" [src]="planing.mapPlaningImage" [alt]="planing.label" class="object-cover"/>
+                    </div>
+                  </div>
+                  <div *ngIf="!planing.mapPlaningImage">
+                    <p>Not existe</p>
+                  </div>
+                </td>
                 <td>
                   <div *ngIf="planing.offre" class="badge badge-primary">
                     {{ planing.offre.label }}
@@ -163,6 +174,23 @@
                   This field is required
                 </div>
               </div>
+              <!-- Map Program Image Field -->
+             <div class="form-control">
+              <label class="label">
+                <span class="label-text flex items-center gap-2">
+                  <i class="bi bi-map text-primary"></i>
+                  Program Map Image
+                </span>
+              </label>
+              <input type="text" 
+                     formControlName="mapPlaningImage" 
+                     class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                     placeholder="Enter map image URL"/>
+              <div class="text-error text-sm mt-1" 
+                   *ngIf="planingForm.get('mapPlaningImage')?.invalid && planingForm.get('mapPlaningImage')?.touched">
+                This field is required
+              </div>
+            </div>
   
               <div class="form-control">
                 <label for="offre" class="label">Offer</label>
