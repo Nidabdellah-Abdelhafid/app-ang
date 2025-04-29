@@ -40,6 +40,18 @@ export class PaysComponent implements OnInit {
     langueParlee: new FormControl('', [Validators.required]),
     vaccinsNecessaires: new FormControl(false),
     mapImage: new FormControl('', [Validators.required]),
+    january: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    february: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    march: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    april: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    may: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    june: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    july: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    august: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    september: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    october: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    november: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)]),
+    december: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(3)])
   });
 
   ngOnInit(): void {
@@ -91,6 +103,18 @@ export class PaysComponent implements OnInit {
       langueParlee: pays.langueParlee,
       vaccinsNecessaires: pays.vaccinsNecessaires,
       mapImage: pays.mapImage,
+      january: pays.january || 1,
+      february: pays.february || 1,
+      march: pays.march || 1,
+      april: pays.april || 1,
+      may: pays.may || 1,
+      june: pays.june || 1,
+      july: pays.july || 1,
+      august: pays.august || 1,
+      september: pays.september || 1,
+      october: pays.october || 1,
+      november: pays.november || 1,
+      december: pays.december || 1
     });
   }
   toggleModal() {

@@ -331,6 +331,170 @@
                     </div>
                   </div>
                 </div>
+              <!-- After your existing form fields -->
+              <div class="form-control mt-4">
+                <label class="label">
+                  <span class="label-text font-medium">Travel Season Ratings</span>
+                  <span class="label-text-alt text-gray-500">1 = Low, 2 = Medium, 3 = High</span>
+                </label>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+                  <!-- January -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="januarySelect">January</label>
+                    <select id="januarySelect"
+                            formControlName="january" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select January season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+                  
+                  <!-- February -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="februarySelect">February</label>
+                    <select id="februarySelect"
+                            formControlName="february" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select February season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- March -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="marchSelect">March</label>
+                    <select id="marchSelect"
+                            formControlName="march" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select March season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- April -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="aprilSelect">April</label>
+                    <select id="aprilSelect"
+                            formControlName="april" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select April season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- May -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="maySelect">May</label>
+                    <select id="maySelect"
+                            formControlName="may" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select May season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- June -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="juneSelect">June</label>
+                    <select id="juneSelect"
+                            formControlName="june" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select June season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- July -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="julySelect">July</label>
+                    <select id="julySelect"
+                            formControlName="july" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select July season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- August -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="augustSelect">August</label>
+                    <select id="augustSelect"
+                            formControlName="august" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select August season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- September -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="septemberSelect">September</label>
+                    <select id="septemberSelect"
+                            formControlName="september" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select September season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- October -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="octoberSelect">October</label>
+                    <select id="octoberSelect"
+                            formControlName="october" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select October season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- November -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="novemberSelect">November</label>
+                    <select id="novemberSelect"
+                            formControlName="november" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select November season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+
+                  <!-- December -->
+                  <div class="relative">
+                    <label class="text-sm text-gray-600 mb-1 block" for="decemberSelect">December</label>
+                    <select id="decemberSelect"
+                            formControlName="december" 
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            aria-label="Select December season rating">
+                      <option [ngValue]="1">Low Season</option>
+                      <option [ngValue]="2">Medium Season</option>
+                      <option [ngValue]="3">High Season</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
     
                 <div class="flex justify-end gap-3 mt-6">
                 <button type="button" class="btn btn-ghost" (click)="toggleModal()">
