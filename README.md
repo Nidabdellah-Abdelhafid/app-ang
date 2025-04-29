@@ -66,7 +66,7 @@ This Travel Management System allows administrators to manage destinations, trav
 
 ### 🙋 Regular User
 - View-only access for offers and countries
-- No admin privileges
+<!-- - No admin privileges -->
 
 ---
 
