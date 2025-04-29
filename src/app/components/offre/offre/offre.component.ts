@@ -56,6 +56,7 @@ export class OffreComponent implements OnInit {
       image: ['', [Validators.required]],
       latitude: ['', [Validators.required]],
       longitude: ['', [Validators.required]],
+      offreDayNumber: [null, [Validators.required]],
       pays: [null, [Validators.required]]
     });
 
@@ -292,6 +293,7 @@ export class OffreComponent implements OnInit {
       image: offre.image,
       latitude: offre.latitude,
       longitude: offre.longitude,
+      offreDayNumber: offre.offreDayNumber,
       pays: offre.pays
     });
   }

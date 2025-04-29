@@ -64,6 +64,7 @@
                 <th class="font-medium">Destination</th>
                 <th class="font-medium">Details</th>
                 <th class="font-medium">Price</th>
+                <th class="font-medium">Number of Days</th>
                 <th class="font-medium">Location</th>
                 <th class="font-medium">Country</th>
                 <th class="font-medium">Themes</th>
@@ -90,6 +91,17 @@
                 </td>
                 <td>
                   <span class="font-medium text-primary">${{ offre.price }}</span>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="bg-primary/10 rounded-lg p-2">
+                      <i class="bi bi-calendar-week text-primary"></i>
+                    </div>
+                    <div>
+                      <span class="font-medium">{{ offre.offreDayNumber }}</span>
+                      <span class="text-gray-500 text-sm ml-1">days</span>
+                    </div>
+                  </div>
                 </td>
                 <td class="text-sm">
                   <div class="flex items-center gap-1">
@@ -211,6 +223,25 @@
                             This field is Required!
                         </div>
                     </div>
+                    </div>
+                  </div>
+
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text flex items-center gap-2">
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        Number of Days
+                      </span>
+                    </label>
+                    <input type="number" 
+                           formControlName="offreDayNumber" 
+                           class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                           placeholder="Enter number of days"/>
+                    <div class="text-error" 
+                         *ngIf="offreForm.get('offreDayNumber')?.invalid && (offreForm.get('offreDayNumber')?.touched || offreForm.get('offreDayNumber')?.dirty)">
+                      <div *ngIf="offreForm.get('offreDayNumber')?.getError('required')" class="text-danger">
+                        This field is Required!
+                      </div>
                     </div>
                   </div>
                 </div>
