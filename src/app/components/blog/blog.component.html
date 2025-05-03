@@ -1,0 +1,171 @@
+    <div class="p-6">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Blog Management</h2>
+            <p class="text-sm text-gray-600">Manage your achievement blogs</p>
+          </div>
+          <button *ngIf="isAdmin" 
+                  class="btn btn-primary gap-2" 
+                  (click)="toggleModal()">
+            <i class="bi bi-plus-lg"></i>
+            Add Blog
+          </button>
+        </div>
+  
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
+    </div>
+</div>
+    <!-- Main Container -->
+<div *ngIf="!isLoading" class="container mx-auto px-4 py-8">
+    
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <div [class.opacity-50]="isLoading">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr class="bg-base-200">
+                <th class="font-medium">Image</th>
+                <th class="font-medium">Title</th>
+                <th class="font-medium">SubTitle</th>
+                <th class="font-medium">Description</th>
+                <th class="text-right" *ngIf="isAdmin">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let blog of listBlog | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+                  class="hover:bg-base-100/50">
+                <td class="w-24">
+                  <img alt="" [src]="blog.imageUrl" [alt]="blog.title" class="w-20 h-20 object-cover rounded"/>
+                </td>
+                <td class="font-medium">{{ blog.title }}</td>
+                <td>{{ blog.subTitle }}</td>
+                <td class="max-w-xs">
+                  <p class="truncate">{{ blog.description }}</p>
+                </td>
+                <td *ngIf="isAdmin">
+                  <div class="flex justify-end gap-2">
+                    <button class="btn btn-ghost btn-sm" title="View Details">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" 
+                            (click)="editBlog(blog)"
+                            title="Edit Blog">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm text-error" 
+                            (click)="deleteBlog(blog.id)"
+                            title="Delete Blog">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="border-t p-4 flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Showing {{ page }} of {{ totalPages }}
+        </span>
+        <pagination-controls 
+          (pageChange)="page = $event"
+          class="my-pagination"
+          [responsive]="true"
+          [previousLabel]="'Previous'"
+          [nextLabel]="'Next'"
+          [screenReaderPaginationLabel]="'Pagination'"
+          [screenReaderPageLabel]="'page'"
+          [screenReaderCurrentLabel]="'You are on page'">
+        </pagination-controls>
+      </div>
+    </div>
+  
+    
+  
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && listBlog?.length === 0" class="text-center py-12">
+      <i class="bi bi-journal-text text-6xl text-gray-400"></i>
+      <p class="mt-4 text-xl text-gray-600">No blog posts found</p>
+    </div>
+  
+    <!-- Blog Modal -->
+    <div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleModal()"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-xl w-full">
+          <div class="p-4 border-b">
+            <h5 class="text-xl font-bold">{{ blogForm.value.id ? 'Edit' : 'Create' }} Blog Post</h5>
+          </div>
+          <div class="p-6">
+            <form [formGroup]="blogForm" (ngSubmit)="submitForm()" class="space-y-4">
+              <!-- Title -->
+              <div class="form-control">
+                <label class="label">Title</label>
+                <input type="text" formControlName="title"
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                       placeholder="Enter blog title"/>
+                <div class="text-error" *ngIf="blogForm.get('title')?.invalid && (blogForm.get('title')?.touched || blogForm.get('title')?.dirty)">
+                  <div *ngIf="blogForm.get('title')?.errors?.['required']">Title is required</div>
+                </div>
+              </div>
+  
+              <!-- Image URL -->
+              <div class="form-control">
+                <label class="label">Image URL</label>
+                <input type="text" formControlName="imageUrl"
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                       placeholder="Enter image URL"/>
+                <div class="text-error" *ngIf="blogForm.get('imageUrl')?.invalid && (blogForm.get('imageUrl')?.touched || blogForm.get('imageUrl')?.dirty)">
+                  <div *ngIf="blogForm.get('imageUrl')?.errors?.['required']">Image URL is required</div>
+                </div>
+              </div>
+
+              <!-- subTitle -->
+              <div class="form-control">
+                <label class="label">SubTitle</label>
+                <input type="text" formControlName="subTitle"
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                       placeholder="Enter blog subTitle"/>
+                <div class="text-error" *ngIf="blogForm.get('subTitle')?.invalid && (blogForm.get('subTitle')?.touched || blogForm.get('subTitle')?.dirty)">
+                  <div *ngIf="blogForm.get('subTitle')?.errors?.['required']">subTitle is required</div>
+                </div>
+              </div>
+  
+            <!-- Description -->
+            <div class="form-control col-span-2">
+                <label class="label">
+                    <span class="label-text font-medium">Description</span>
+                </label>
+                <textarea formControlName="description"
+                            class="textarea textarea-bordered min-h-[200px] w-full focus:outline-none focus:border-[#eb6864]"
+                            placeholder="Enter blog description"></textarea>
+                <div class="text-error mt-2" *ngIf="blogForm.get('description')?.invalid && (blogForm.get('description')?.touched || blogForm.get('description')?.dirty)">
+                    <div *ngIf="blogForm.get('description')?.errors?.['required']" class="text-sm">
+                    <i class="bi bi-exclamation-circle mr-1"></i>
+                    Description is required
+                    </div>
+                </div>
+                </div>
+  
+              <!-- Form Actions -->
+              <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="btn btn-ghost" (click)="toggleModal()">
+                  Cancel
+                </button>
+                <button type="submit" [disabled]="blogForm.invalid" class="btn btn-primary">
+                  {{ blogForm.value.id ? 'Update' : 'Create' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -19,6 +19,7 @@ export class BadgeComponent implements OnInit {
   currentUser: any = null;
   isAdmin: boolean = false;
   isLoading: boolean = false;
+  
   constructor(private badgeService: BadgeService,
     private accountService: AccountService,
     private jwtTokenService: JwtTokenService,

@@ -46,6 +46,26 @@
           </details>
         </li>
 
+        <li class="menu-title mt-4" >
+          <span class="text-xs font-medium text-gray-400 px-3">Bolgs MANAGEMENT</span>
+        </li>
+        <li>
+          <details class="group">
+            <summary class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg cursor-pointer">
+              <i class="bi bi-newspaper text-lg"></i>
+              <span>Blogs</span>
+            </summary>
+            <ul class="menu-sub pl-6 mt-2 space-y-1">
+              <li *ngFor="let item of ['blogs', 'blogContents']">
+                <a [routerLink]="'/' + item" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg">
+                  <i [class]="'bi bi-' + (item ==='blogs'? 'newspaper' : 'list') +'text-lg'"></i>
+                  <span class="capitalize">{{item}}</span>
+                </a>
+              </li>
+            </ul>
+          </details>  
+        </li>
+
         <li class="menu-title mt-4">
           <span class="text-xs font-medium text-gray-400 px-3">COMMUNICATION</span>
         </li>

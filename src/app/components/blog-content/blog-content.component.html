@@ -1,0 +1,246 @@
+<div class="p-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">Blog Content Management</h2>
+        <p class="text-sm text-gray-600">Manage your blog content and articles</p>
+      </div>
+      <button *ngIf="isAdmin" 
+              class="btn btn-primary gap-2" 
+              (click)="toggleModal()">
+        <i class="bi bi-plus-lg"></i>
+        Add Content
+      </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div *ngIf="!isLoading" class="container mx-auto px-4 py-8">
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <!-- Filter Section -->
+    <div class="mb-6 bg-white rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-4">
+        <div class="form-control w-auto">
+            <select id="blogFilter"
+                    [(ngModel)]="selectedBlog"
+                    (ngModelChange)="filterByBlog()"
+                    aria-label="Filter by blog"
+                    class="select select-bordered w-64 focus:outline-none focus:border-[#eb6864]">
+            <option [ngValue]="null">Filter by blog</option>
+            <option *ngFor="let blog of listBlog" [ngValue]="blog">
+                {{blog.title}}
+            </option>
+            </select>
+        </div>
+    
+        <button class="btn btn-ghost h-[2.5rem]" 
+                (click)="clearFilter()" 
+                *ngIf="selectedBlog">
+            <i class="bi bi-x-circle"></i>
+            Clear Filter
+        </button>
+        </div>
+    </div>
+      <div class="overflow-x-auto">
+        <div [class.opacity-50]="isLoading">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr class="bg-base-200">
+                <th class="font-medium">Image</th>
+                <th class="font-medium">Title</th>
+                <th class="font-medium">Blog</th>
+                <th class="font-medium">paragraph 1</th>
+                <th class="font-medium">paragraph 2</th>
+                <th class="font-medium">paragraph 3</th>
+                <th class="text-right" *ngIf="isAdmin">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let content of filteredBlogContents | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+                  class="hover:bg-base-100/50">
+                <td >
+                    <div class="w-36">
+                        <img alt="" [src]="content.imageUrl" [alt]="content.title" class="w-32 h-32 object-cover rounded"/>
+
+                    </div>
+                </td>
+                <td class="max-w-sm font-medium">{{ content.title }}</td>
+                <td>
+                  <div class="w-24">
+                    <span class="badge badge-primary badge-md font-medium text-xl">
+                        {{ content.blog?.title }}
+                     </span>
+                  </div>
+                </td>   
+                <td>
+                  <div class="w-20">
+                    <p class="truncate">{{ content.paragraph1 }}</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-20">
+                     <p class="truncate">{{ content.paragraph2 }}</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-20">
+                    <p class="truncate">{{ content.paragraph3 }}</p>
+                  </div>
+                </td>
+                <td *ngIf="isAdmin">
+                  <div class="flex justify-end gap-2">
+                    <button class="btn btn-ghost btn-sm" title="View Details">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" 
+                            (click)="editBlogContent(content)"
+                            title="Edit Content">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm text-error" 
+                            (click)="deleteBlogContent(content.id)"
+                            title="Delete Content">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="border-t p-4 flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Showing {{ page }} of {{ totalPages }}
+        </span>
+        <pagination-controls 
+          (pageChange)="page = $event"
+          class="my-pagination"
+          [responsive]="true"
+          [previousLabel]="'Previous'"
+          [nextLabel]="'Next'"
+          [screenReaderPaginationLabel]="'Pagination'"
+          [screenReaderPageLabel]="'page'"
+          [screenReaderCurrentLabel]="'You are on page'">
+        </pagination-controls>
+      </div>
+    </div>
+  
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && listBlogContent?.length === 0" class="text-center py-12">
+      <i class="bi bi-journal-text text-6xl text-gray-400"></i>
+      <p class="mt-4 text-xl text-gray-600">No blog contents found</p>
+    </div>
+  
+    <!-- Content Modal -->
+    <div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black opacity-50" (click)="toggleModal()"></div>
+        <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full">
+          <div class="p-4 border-b">
+            <h5 class="text-xl font-bold">{{ blogContentForm.value.id ? 'Edit' : 'Create' }} Blog Content</h5>
+          </div>
+          <div class="p-6">
+            <form [formGroup]="blogContentForm" (ngSubmit)="submitForm()" class="space-y-4">
+              <!-- Title -->
+              <div class="form-control">
+                <label class="label">Title</label>
+                <input type="text" formControlName="title"
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                       placeholder="Enter content title"/>
+                <div class="text-error" *ngIf="blogContentForm.get('title')?.invalid && (blogContentForm.get('title')?.touched || blogContentForm.get('title')?.dirty)">
+                  <div *ngIf="blogContentForm.get('title')?.errors?.['required']">Title is required</div>
+                </div>
+              </div>
+  
+            <!-- Blog Selection -->
+            <div class="form-control">
+              <label class="label" for="blogSelect">Select Blog</label>
+              
+              <select id="blogSelect"
+                    name="blogSelect"
+                    formControlName="blog" 
+                    class="select select-bordered w-full"
+                    aria-label="Select a blog"
+                    title="Blog selection">
+              <option disabled>Select a blog</option>
+              <option *ngFor="let blog of listBlog" [ngValue]="blog">
+                {{blog.title}}
+            </option>
+              </select>
+              <div class="text-error" *ngIf="blogContentForm.get('blog')?.invalid && (blogContentForm.get('blog')?.touched || blogContentForm.get('blog')?.dirty)">
+                <div *ngIf="blogContentForm.get('blog')?.errors?.['required']">Blog selection is required</div>
+              </div>
+            </div>
+  
+              <!-- Image URL -->
+              <div class="form-control">
+                <label class="label">Image URL</label>
+                <input type="text" formControlName="imageUrl"
+                       class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                       placeholder="Enter image URL"/>
+                <div class="text-error" *ngIf="blogContentForm.get('imageUrl')?.invalid && (blogContentForm.get('imageUrl')?.touched || blogContentForm.get('imageUrl')?.dirty)">
+                  <div *ngIf="blogContentForm.get('imageUrl')?.errors?.['required']">Image URL is required</div>
+                </div>
+              </div>
+  
+              <!-- Paragraphs -->
+              <div class="form-control col-span-2">
+                <label class="label">
+                    <span class="label-text font-medium">Paragraph 1</span>
+                </label>
+                <textarea formControlName="paragraph1"
+                          class="textarea textarea-bordered min-h-[80px] w-full focus:outline-none focus:border-[#eb6864]"
+                          placeholder="Enter first paragraph"></textarea>
+                <div class="text-error" *ngIf="blogContentForm.get('paragraph1')?.invalid && (blogContentForm.get('paragraph1')?.touched || blogContentForm.get('paragraph1')?.dirty)">
+                  <div *ngIf="blogContentForm.get('paragraph1')?.errors?.['required']">First paragraph is required</div>
+                </div>
+              </div>
+  
+              <div class="form-control col-span-2">
+                <label class="label">
+                    <span class="label-text font-medium">Paragraph 2</span>
+                </label>
+                <textarea formControlName="paragraph2"
+                          class="textarea textarea-bordered min-h-[80px] w-full focus:outline-none focus:border-[#eb6864]"
+                          placeholder="Enter second paragraph"></textarea>
+                <div class="text-error" *ngIf="blogContentForm.get('paragraph2')?.invalid && (blogContentForm.get('paragraph2')?.touched || blogContentForm.get('paragraph2')?.dirty)">
+                  <div *ngIf="blogContentForm.get('paragraph2')?.errors?.['required']">Second paragraph is required</div>
+                </div>
+              </div>
+  
+              <div class="form-control col-span-2">
+                 <label class="label">
+                    <span class="label-text font-medium">Paragraph 3</span>
+                </label>
+                <textarea formControlName="paragraph3"
+                          class="textarea textarea-bordered min-h-[80px] w-full focus:outline-none focus:border-[#eb6864]"
+                          placeholder="Enter third paragraph"></textarea>
+                <div class="text-error" *ngIf="blogContentForm.get('paragraph3')?.invalid && (blogContentForm.get('paragraph3')?.touched || blogContentForm.get('paragraph3')?.dirty)">
+                  <div *ngIf="blogContentForm.get('paragraph3')?.errors?.['required']">Third paragraph is required</div>
+                </div>
+              </div>
+  
+              <!-- Form Actions -->
+              <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="btn btn-ghost" (click)="toggleModal()">
+                  Cancel
+                </button>
+                <button type="submit" [disabled]="blogContentForm.invalid" class="btn btn-primary">
+                  {{ blogContentForm.value.id ? 'Update' : 'Create' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

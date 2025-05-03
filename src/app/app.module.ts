@@ -33,6 +33,8 @@ import { MessageComponent } from './components/message/message/message.component
 import { FactureComponent } from './components/facture/facture/facture.component';
 import { HomePageComponent } from './components/partials/home-page/home-page.component';
 import { CeilPipe } from './pipes/ceil.pipe';
+import { BlogComponent } from './components/blog/blog.component';
+import { BlogContentComponent } from './components/blog-content/blog-content.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +61,9 @@ import { CeilPipe } from './pipes/ceil.pipe';
     MessageComponent,
     FactureComponent,
     HomePageComponent,
-    CeilPipe
+    CeilPipe,
+    BlogComponent,
+    BlogContentComponent
   ],
   imports: [
     BrowserModule,

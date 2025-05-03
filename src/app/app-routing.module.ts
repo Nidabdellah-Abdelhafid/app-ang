@@ -24,6 +24,8 @@ import { ProgrammeComponent } from './components/programme/programme/programme.c
 import { ReservationComponent } from './components/reservation/reservation/reservation.component';
 import { ThemeComponent } from './components/theme/theme/theme.component';
 import { HomePageComponent } from './components/partials/home-page/home-page.component';
+import { BlogComponent } from './components/blog/blog.component';
+import { BlogContentComponent } from './components/blog-content/blog-content.component';
 
 const routes: Routes = [
   {path:"", redirectTo:"/home", pathMatch:'full'},
@@ -49,6 +51,20 @@ const routes: Routes = [
     path: "badges", children:[
       {
         path:"",component:BadgeComponent
+      }
+    ], canActivate:[AuthGuard]
+  },
+  {
+    path: "blogContents", children:[
+      {
+        path:"",component:BlogContentComponent
+      }
+    ], canActivate:[AuthGuard]
+  },
+  {
+    path: "blogs", children:[
+      {
+        path:"",component:BlogComponent
       }
     ], canActivate:[AuthGuard]
   },
