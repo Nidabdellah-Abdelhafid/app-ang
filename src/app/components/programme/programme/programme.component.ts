@@ -26,6 +26,7 @@ export class ProgrammeComponent implements OnInit {
   currentUser: any = null;
   isAdmin: boolean = false;
   isLoading: boolean = false;
+isAddLoading: boolean = false;
   constructor(
     private programmeService: ProgrammeService,
     private planingService: PlaningService,
@@ -124,6 +125,7 @@ export class ProgrammeComponent implements OnInit {
   }
 
   submitForm() {
+this.isAddLoading = true;
     if (this.programmeForm.invalid) {
       return;
     }
@@ -142,8 +144,10 @@ export class ProgrammeComponent implements OnInit {
             text: "Your programme has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating programme', err);
           alert('Error occurred while updating programme');
         }
@@ -162,8 +166,10 @@ export class ProgrammeComponent implements OnInit {
             timer: 1500
           });
           this.programmeForm.reset(); // Reset form after successful submission
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating programme', err);
           alert('Error occurred while creating programme');
         }

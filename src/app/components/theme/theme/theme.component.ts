@@ -19,6 +19,7 @@ export class ThemeComponent implements OnInit {
   totalPages: number = 0;
   isModalOpen: boolean = false;
   isLoading: boolean = false;
+isAddLoading: boolean = false;
 
   constructor(
     private themeService: ThemeService,
@@ -111,6 +112,7 @@ export class ThemeComponent implements OnInit {
 
   // Submit form to create or update theme
   submitForm() {
+this.isAddLoading = true;
     if (this.themeForm.invalid) {
       return;
     }
@@ -127,8 +129,10 @@ export class ThemeComponent implements OnInit {
             text: "Your item has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating theme', err);
           alert('An error occurred while updating the theme.');
         }
@@ -147,8 +151,10 @@ export class ThemeComponent implements OnInit {
             timer: 1500
           });
           this.themeForm.reset();
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating theme', err);
           alert('An error occurred while creating the theme.');
         }

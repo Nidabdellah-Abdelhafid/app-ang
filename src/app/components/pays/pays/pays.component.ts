@@ -18,6 +18,7 @@ export class PaysComponent implements OnInit {
   itemsPerPage: number = 5;
   totalPages: number = 0;
   isLoading: boolean = false;
+isAddLoading: boolean = false;
 
   constructor(private paysService: PaysService,
     private accountService: AccountService,
@@ -154,6 +155,7 @@ export class PaysComponent implements OnInit {
   }
 
 submitForm() {
+this.isAddLoading = true;
   if (this.paysForm.invalid) {
     return;
   }
@@ -170,8 +172,10 @@ submitForm() {
           text: "Your item has been updated.",
           icon: "success"
         });
+        this.isAddLoading = false;
       },
       error: (err) => {
+        this.isAddLoading = false;
         console.error('Error updating country', err);
         alert('An error occurred while updating the country.');
       }
@@ -189,8 +193,10 @@ submitForm() {
           timer: 1500
         });
         this.paysForm.reset(); // Reset form after successful submission
+        this.isAddLoading = false;
       },
       error: (err) => {
+        this.isAddLoading = false;
         console.error('Error creating country', err);
         alert('An error occurred while creating the country.');
       }

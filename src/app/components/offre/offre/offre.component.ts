@@ -7,7 +7,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import Swal from 'sweetalert2'
 import { AccountService } from 'src/app/services/account.service';
 import { JwtTokenService } from 'src/app/services/jwt-token.service';
-import { CeilPipe } from '../../../pipes/ceil.pipe';
 
 @Component({
   selector: 'app-offre',
@@ -38,6 +37,7 @@ export class OffreComponent implements OnInit {
   filteredOffres: any;
   selectedPays: any = null;
   isLoading: boolean = false;
+  isAddLoading: boolean = false;
   
   constructor(
     private offreService: OffreService,
@@ -62,12 +62,12 @@ export class OffreComponent implements OnInit {
 
     this.themeForm = this.fb.group({
       offre :[null,[Validators.required]],    
-      theme: [null, [Validators.required]]
+      theme: [[], [Validators.required]]
     });
 
     this.badgeForm = this.fb.group({
       offre :[null,[Validators.required]],
-      badge: [null, [Validators.required]]
+      badge: [[], [Validators.required]]
     });
   }
 
@@ -167,6 +167,7 @@ export class OffreComponent implements OnInit {
   }
 
   submitForm() {
+    this.isAddLoading = true;
     if (this.offreForm.invalid) {
       return;
     }
@@ -182,8 +183,10 @@ export class OffreComponent implements OnInit {
             text: "Your item has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating offer', err);
           alert('Error occurred while updating offer');
         }
@@ -201,8 +204,10 @@ export class OffreComponent implements OnInit {
             timer: 1500
           });
           this.offreForm.reset(); // Reset form after successful submission
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating offer', err);
           alert('Error occurred while creating offer');
         }
@@ -211,64 +216,98 @@ export class OffreComponent implements OnInit {
   }
 
   submitTheme() {
-    if (this.themeForm.invalid) {
-      return;
-    }
+    this.isAddLoading = true;
 
-    const data = this.themeForm.value;
-    if(data.offre.id && data.theme.id){
-      this.offreService.addThemeToOffre(data).subscribe({
-        next: (res) => {
-          this.getOffre(); // Refresh the offer list
-          this.toggleThemeModal();
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "add the to offre created successfully!",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.themeForm.reset(); // Reset form after successful submission
-        },
-        error: (err) => {
-          console.error('Error creating offer', err);
-          alert('Error occurred while creating offer');
-        }
-      });
+    if (this.themeForm.invalid) return;
+  
+    const selectedThemes = this.themeForm.get('theme')?.value;
+    const offre = this.themeForm.get('offre')?.value;
+  
+    if (!selectedThemes || !offre) return;
+  
+    // Convert to array if it's not already
+    const themesArray = Array.isArray(selectedThemes) ? selectedThemes : [selectedThemes];
+  
+    // Process each theme one by one
+    let processed = 0;
+    themesArray.forEach(theme => {
+      const data = {
+        offre: offre,
+        theme: theme
+      };
       
-    }
-  }
+      this.offreService.addThemeToOffre(data).subscribe({
+        next: () => {
+          processed++;
+          if (processed === themesArray.length) {
+            this.getOffre();
+            this.toggleThemeModal();
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Themes added successfully!",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.themeForm.reset();
+          this.isAddLoading = false;
 
-  submitBadge() {
-    if (this.badgeForm.invalid) {
-      return;
-    }
-
-    const data = this.badgeForm.value;
-
-    // Your logic to add badge to offer
-    if(data.offre.id && data.badge.id){
-      this.offreService.addBadgeToOffre(data).subscribe({
-        next: (res) => {
-          this.getOffre(); // Refresh the offer list
-          this.toggleBadgeModal();
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "add the to badge created successfully!",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.badgeForm.reset(); // Reset form after successful submission
+          }
         },
         error: (err) => {
-          console.error('Error creating offer', err);
-          alert('Error occurred while creating offer');
+        this.isAddLoading = false;
+
+          console.error('Error adding theme', err);
+          Swal.fire('Error', `Failed to add theme: ${theme.label}`, 'error');
         }
       });
-
-    }
-
+    });
+  }
+  
+  submitBadge() {
+    this.isAddLoading = true;
+    if (this.badgeForm.invalid) return;
+  
+    const selectedBadges = this.badgeForm.get('badge')?.value;
+    const offre = this.badgeForm.get('offre')?.value;
+  
+    if (!selectedBadges || !offre) return;
+  
+    // Convert to array if it's not already
+    const badgesArray = Array.isArray(selectedBadges) ? selectedBadges : [selectedBadges];
+  
+    // Process each badge one by one
+    let processed = 0;
+    badgesArray.forEach(badge => {
+      const data = {
+        offre: offre,
+        badge: badge
+      };
+      
+      this.offreService.addBadgeToOffre(data).subscribe({
+        next: () => {
+          processed++;
+          if (processed === badgesArray.length) {
+            this.getOffre();
+            this.toggleBadgeModal();
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Badges added successfully!",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.badgeForm.reset();
+            this.isAddLoading = false;
+          }
+        },
+        error: (err) => {
+          this.isAddLoading = false;
+          console.error('Error adding badge', err);
+          Swal.fire('Error', `Failed to add badge: ${badge.label}`, 'error');
+        }
+      });
+    });
   }
 
   clearInput() {

@@ -19,6 +19,7 @@ export class BlogComponent implements OnInit {
   isAdmin: boolean = false;
   isLoading: boolean = false;
   currentUser: any = null;
+isAddLoading: boolean = false;
 
   blogForm = new FormGroup({
     id: new FormControl(null),
@@ -60,6 +61,7 @@ export class BlogComponent implements OnInit {
   }
 
   submitForm() {
+this.isAddLoading = true;
     if (this.blogForm.invalid) {
       return;
     }
@@ -76,8 +78,10 @@ export class BlogComponent implements OnInit {
             text: "Blog has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating blog', err);
           Swal.fire({
             title: "Error!",
@@ -96,8 +100,10 @@ export class BlogComponent implements OnInit {
             text: "Blog has been created.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating blog', err);
           Swal.fire({
             title: "Error!",

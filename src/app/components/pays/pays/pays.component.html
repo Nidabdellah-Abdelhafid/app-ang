@@ -500,8 +500,14 @@
                 <button type="button" class="btn btn-ghost" (click)="toggleModal()">
                     Cancel
                 </button>
-                <button type="submit" [disabled]="paysForm.invalid" class="btn btn-primary">
+                <button *ngIf="!isAddLoading" type="submit" [disabled]="paysForm.invalid" class="btn btn-primary">
                     {{ paysForm.value.id ? 'Update' : 'Save' }}
+                </button>
+                 <button *ngIf="isAddLoading"
+                  type="button"
+                  class="w-full">
+                <span class="loading loading-spinner loading-lg text-primary"></span>
+                   Loading ...
                 </button>
                 </div>
             </form>

@@ -307,8 +307,14 @@
                 <button type="button" class="btn btn-ghost" (click)="toggleOfferModal()">
                   Cancel
                 </button>
-                <button type="submit" [disabled]="offreForm.invalid" class="btn btn-primary">
+                <button *ngIf="!isAddLoading"  type="submit" [disabled]="offreForm.invalid" class="btn btn-primary">
                   {{ offreForm.value.id ? 'Update' : 'Save' }}
+                </button>
+                <button *ngIf="isAddLoading"
+                  type="button"
+                  class="w-full">
+                <span class="loading loading-spinner loading-lg text-primary"></span>
+                   Loading ...
                 </button>
               </div>
             </form>
@@ -349,9 +355,9 @@
                     <label class="label" for="themeSelect">Select Theme</label>
                     <select id="themeSelect"
                             formControlName="theme" 
-                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            multiple
+                            class="select select-bordered w-full h-full focus:outline-none focus:border-[#eb6864]"
                             aria-label="Select theme">
-                      <option disabled>Choose a theme</option>
                       <option *ngFor="let theme of listTheme" [ngValue]="theme">
                         {{ theme.label }}
                       </option>
@@ -362,12 +368,20 @@
                         </div>
                     </div>
                   </div>
+
+
               <div class="flex justify-end gap-3 mt-6">
                 <button type="button" class="btn btn-ghost" (click)="toggleThemeModal()">
                   Cancel
                 </button>
-                <button type="submit" [disabled]="themeForm.invalid" class="btn btn-primary">
+                <button *ngIf="!isAddLoading" type="submit" [disabled]="themeForm.invalid" class="btn btn-primary">
                   Save
+                </button>  
+                <button *ngIf="isAddLoading"
+                  type="button"
+                  class="w-full">
+                <span class="loading loading-spinner loading-lg text-primary"></span>
+                   Loading ...
                 </button>
               </div>
             </form>
@@ -408,9 +422,9 @@
                     <label class="label" for="badgeSelect">Select Badge</label>
                     <select id="badgeSelect"
                             formControlName="badge" 
-                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]"
+                            multiple
+                            class="select select-bordered w-full h-full focus:outline-none focus:border-[#eb6864]"
                             aria-label="Select badge">
-                      <option disabled>Choose a badge</option>
                       <option *ngFor="let badge of listBadge" [ngValue]="badge">
                         {{ badge.label }}
                       </option>
@@ -425,8 +439,14 @@
                 <button type="button" class="btn btn-ghost" (click)="toggleBadgeModal()">
                   Cancel
                 </button>
-                <button type="submit" [disabled]="badgeForm.invalid" class="btn btn-primary">
+                <button *ngIf="!isAddLoading" type="submit" [disabled]="badgeForm.invalid" class="btn btn-primary">
                   Save
+                </button> 
+                <button *ngIf="isAddLoading"
+                  type="button"
+                  class="w-full">
+                <span class="loading loading-spinner loading-lg text-primary"></span>
+                   Loading ...
                 </button>
               </div>
             </form>

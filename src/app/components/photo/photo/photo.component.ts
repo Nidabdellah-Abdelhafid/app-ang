@@ -33,6 +33,7 @@ export class PhotoComponent implements OnInit {
   selectedProgramme: number | null = null;
   filteredPhotos: any;
   isLoading: boolean = false;
+isAddLoading: boolean = false;
 
   // Define photoForm to handle form controls
   photoForm = new FormGroup({
@@ -75,6 +76,7 @@ export class PhotoComponent implements OnInit {
     this.getPays();
     this.getPlaning();
     this.getProgramme();
+    this.setActiveTab('country');
     this.accountService.authStatus.subscribe(res => {
       this.currentUser = this.jwtTokenService.getInfos();
       if (this.currentUser && this.currentUser.roles) {
@@ -139,6 +141,8 @@ export class PhotoComponent implements OnInit {
     this.isModalOpen = !this.isModalOpen;
     if (!this.isModalOpen) {
       this.clearInput();
+    }else {
+      this.setActiveTab('country'); // Ensure currentForm is set when opening modal
     }
   }
 
@@ -242,6 +246,12 @@ export class PhotoComponent implements OnInit {
   }
 
   submitForm() {
+this.isAddLoading = true;
+    if (!this.currentForm) {
+      Swal.fire('Error', 'No form selected', 'error');
+      return;
+    }
+
     const formData = this.currentForm.value;
     
     if (!formData) {
@@ -265,8 +275,10 @@ export class PhotoComponent implements OnInit {
         });
         this.clearInput();
         this.toggleModal();
+        this.isAddLoading = false;
       },
       error: (err) => {
+        this.isAddLoading = false;
         console.error('Error with photo operation', err);
         Swal.fire('Error', `Failed to ${formData.id ? 'update' : 'create'} photo`, 'error');
       }

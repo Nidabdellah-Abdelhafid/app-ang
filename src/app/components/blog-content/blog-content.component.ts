@@ -23,6 +23,7 @@ export class BlogContentComponent implements OnInit {
   currentUser: any = null;
   filteredBlogContents: any;
   selectedBlog: any = null;
+isAddLoading: boolean = false;
 
   blogContentForm = new FormGroup({
     id: new FormControl(null),
@@ -100,6 +101,7 @@ export class BlogContentComponent implements OnInit {
   }
 
   submitForm() {
+this.isAddLoading = true;
     if (this.blogContentForm.invalid) {
       return;
     }
@@ -116,8 +118,10 @@ export class BlogContentComponent implements OnInit {
             text: "Blog content has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating blog content', err);
           Swal.fire({
             title: "Error!",
@@ -136,8 +140,10 @@ export class BlogContentComponent implements OnInit {
             text: "Blog content has been created.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating blog content', err);
           Swal.fire({
             title: "Error!",

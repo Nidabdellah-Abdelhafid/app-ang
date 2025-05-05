@@ -24,6 +24,7 @@ export class PlaningComponent implements OnInit {
   filteredPlanings: any;
   selectedOffre: any = null;
   isLoading: boolean = false;
+isAddLoading: boolean = false;
 
   constructor(
     private planingService: PlaningService,
@@ -108,6 +109,7 @@ export class PlaningComponent implements OnInit {
   }
 
   submitForm() {
+this.isAddLoading = true;
     if (this.planingForm.invalid) {
       return;
     }
@@ -125,8 +127,10 @@ export class PlaningComponent implements OnInit {
             text: "Your item has been updated.",
             icon: "success"
           });
+          this.isAddLoading = false;
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error updating planing', err);
           alert('Error occurred while updating planing');
         }
@@ -146,9 +150,11 @@ export class PlaningComponent implements OnInit {
             timer: 1500
           });
           this.planingForm.reset(); // Reset form after successful submission
+          this.isAddLoading = false;
           
         },
         error: (err) => {
+          this.isAddLoading = false;
           console.error('Error creating planing', err);
           alert('Error occurred while creating planing');
         }
