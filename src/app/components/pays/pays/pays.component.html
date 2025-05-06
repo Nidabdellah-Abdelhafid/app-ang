@@ -122,6 +122,19 @@
                         </div>
                     </div>
                     </div>
+
+                    <div class="form-control">
+                      <label class="label">Subtitle</label>
+                      <input type="text" formControlName="subTitle" 
+                              class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                              placeholder="Enter country subtitle"/>
+                      <div class="text-error" 
+                          *ngIf="paysForm.get('subTitle')?.invalid && (paysForm.get('subTitle')?.touched || paysForm.get('subTitle')?.dirty)">
+                          <div *ngIf="paysForm.get('subTitle')?.getError('required')" class="text-danger">
+                          This field is Required!
+                          </div>
+                      </div>
+                    </div>
     
                     <div class="form-control">
                         <label class="label">
@@ -182,6 +195,18 @@
                           <div class="text-error" 
                         *ngIf="paysForm.get('mapImage')?.invalid && (paysForm.get('mapImage')?.touched || paysForm.get('mapImage')?.dirty)">
                         <div *ngIf="paysForm.get('mapImage')?.getError('required')" class="text-danger">
+                        This field is Required!
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-control">
+                    <label class="label">Destination Image</label>
+                    <input type="text" formControlName="imageDes" 
+                            class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                            placeholder="Enter destination image URL"/>
+                    <div class="text-error" 
+                        *ngIf="paysForm.get('imageDes')?.invalid && (paysForm.get('imageDes')?.touched || paysForm.get('imageDes')?.dirty)">
+                        <div *ngIf="paysForm.get('imageDes')?.getError('required')" class="text-danger">
                         This field is Required!
                         </div>
                     </div>

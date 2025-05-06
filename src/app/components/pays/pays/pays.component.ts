@@ -28,6 +28,8 @@ isAddLoading: boolean = false;
   paysForm = new FormGroup({
     id: new FormControl(null), // `id` is optional for new countries
     label: new FormControl('', [Validators.required]),
+    subTitle: new FormControl('', [Validators.required]),
+    imageDes: new FormControl('', [Validators.required]), 
     image: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
     continent: new FormControl('', [Validators.required]),
@@ -92,6 +94,8 @@ isAddLoading: boolean = false;
       id: pays.id,       
       image: pays.image, 
       label: pays.label, 
+      subTitle: pays.subTitle,
+      imageDes: pays.imageDes, 
       description: pays.description,
       continent: pays.continent,
       latitude: pays.latitude,

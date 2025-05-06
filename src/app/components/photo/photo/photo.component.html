@@ -286,7 +286,7 @@
                             class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
                       <option [ngValue]="null">Choose a program</option>
                       <option *ngFor="let programme of listProgramme" [ngValue]="programme">
-                        {{programme.heure}}
+                        {{programme.label}}
                       </option>
                     </select>
                   <div class="text-error text-sm mt-1" 
