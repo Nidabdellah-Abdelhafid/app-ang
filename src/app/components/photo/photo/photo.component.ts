@@ -7,6 +7,7 @@ import { PhotoService } from './../../../services/photo/photo.service';  // Ensu
 import Swal from 'sweetalert2';
 import { AccountService } from 'src/app/services/account.service';
 import { JwtTokenService } from 'src/app/services/jwt-token.service';
+import { OffreService } from 'src/app/services/offre/offre.service';
 
 @Component({
   selector: 'app-photo',
@@ -18,6 +19,7 @@ export class PhotoComponent implements OnInit {
   listPays: any;
   listPlaning: any;
   listProgramme: any;
+  listOffre: any;
 
   currentUser: any = null;
   isAdmin: boolean = false;
@@ -31,9 +33,10 @@ export class PhotoComponent implements OnInit {
   selectedPays: number | null = null;
   selectedPlaning: number | null = null;
   selectedProgramme: number | null = null;
+  selectedOffre: number | null = null;
   filteredPhotos: any;
   isLoading: boolean = false;
-isAddLoading: boolean = false;
+  isAddLoading: boolean = false;
 
   // Define photoForm to handle form controls
   photoForm = new FormGroup({
@@ -41,7 +44,8 @@ isAddLoading: boolean = false;
     url: new FormControl('', [Validators.required]),
     pays: new FormControl(null, [Validators.required]),  // You can extend this with more validation if needed
     planing: new FormControl(null),
-    programme: new FormControl(null)
+    programme: new FormControl(null),
+    offre: new FormControl(null)
   });
 
   photoFormPlaning = new FormGroup({
@@ -49,7 +53,8 @@ isAddLoading: boolean = false;
     url: new FormControl('', [Validators.required]),
     pays: new FormControl(null),  // You can extend this with more validation if needed
     planing: new FormControl(null, [Validators.required]),
-    programme: new FormControl(null)
+    programme: new FormControl(null),
+    offre: new FormControl(null)
   });
 
   photoFormProgramme = new FormGroup({
@@ -57,9 +62,18 @@ isAddLoading: boolean = false;
     url: new FormControl('', [Validators.required]),
     pays: new FormControl(null),  // You can extend this with more validation if needed
     planing: new FormControl(null),
-    programme: new FormControl(null, [Validators.required])
+    programme: new FormControl(null, [Validators.required]),
+    offre: new FormControl(null)
   });
   
+  photoFormOffre = new FormGroup({
+    id: new FormControl(null),  // ID is optional when adding a new photo
+    url: new FormControl('', [Validators.required]),
+    pays: new FormControl(null),  // You can extend this with more validation if needed
+    planing: new FormControl(null),
+    programme: new FormControl(null),
+    offre: new FormControl(null, [Validators.required])
+  });
 
 
   constructor(
@@ -67,6 +81,7 @@ isAddLoading: boolean = false;
     private paysService:PaysService,
     private planingService:PlaningService,
     private programmeService:ProgrammeService,
+    private offreService:OffreService,
     private accountService: AccountService,
     private jwtTokenService: JwtTokenService,
   ) {}
@@ -76,6 +91,7 @@ isAddLoading: boolean = false;
     this.getPays();
     this.getPlaning();
     this.getProgramme();
+    this.getOffre();
     this.setActiveTab('country');
     this.accountService.authStatus.subscribe(res => {
       this.currentUser = this.jwtTokenService.getInfos();
@@ -85,6 +101,8 @@ isAddLoading: boolean = false;
     });
     this.filteredPhotos = this.listPhoto || [];
   }
+
+  
 
   filterPhotos() {
     if (!this.filterType) {
@@ -100,12 +118,14 @@ isAddLoading: boolean = false;
           return this.selectedPlaning ? photo.planing?.id === this.selectedPlaning : true;
         case 'programme':
           return this.selectedProgramme ? photo.programme?.id === this.selectedProgramme : true;
+        case 'offre': // Add this case
+          return this.selectedOffre ? photo.offre?.id === this.selectedOffre : true;
         default:
           return true;
       }
     });
 
-    this.page = 1; // Reset to first page when filtering
+    this.page = 1;
     this.totalPages = Math.ceil(this.filteredPhotos.length / this.itemsPerPage);
   }
 
@@ -158,6 +178,9 @@ isAddLoading: boolean = false;
       case 'program':
         this.currentForm = this.photoFormProgramme;
         break;
+      case 'offer': // Add this case
+        this.currentForm = this.photoFormOffre;
+        break;
     }
   }
 
@@ -194,6 +217,17 @@ isAddLoading: boolean = false;
     });
   }
 
+  getOffre() {
+    this.offreService.getAll().subscribe({
+      next: (res) => {
+        this.listOffre = res;
+      },
+      error: (err) => {
+        console.error('Error fetching offres', err);
+      }
+    });
+  }
+
 
   // Show photo details
   showPhoto(photo: any) {
@@ -211,6 +245,9 @@ isAddLoading: boolean = false;
     } else if (photo.programme) {
       this.setActiveTab('program');
       this.photoFormProgramme.patchValue(photo);
+    } else if (photo.offre) { 
+      this.setActiveTab('offer');
+      this.photoFormOffre.patchValue(photo);
     }
     this.toggleModal();
   }
@@ -246,7 +283,7 @@ isAddLoading: boolean = false;
   }
 
   submitForm() {
-this.isAddLoading = true;
+    this.isAddLoading = true;
     if (!this.currentForm) {
       Swal.fire('Error', 'No form selected', 'error');
       return;
@@ -290,6 +327,7 @@ this.isAddLoading = true;
     this.photoForm.reset();
     this.photoFormPlaning.reset();
     this.photoFormProgramme.reset();
+    this.photoFormOffre.reset(); // Add this line
     this.setActiveTab('country');
   }
 }

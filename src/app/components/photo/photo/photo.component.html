@@ -25,6 +25,7 @@
                   <option value="pays">Countries</option>
                   <option value="planing">Planning</option>
                   <option value="programme">Program</option>
+                  <option value="offre">Offers</option>
                 </select>
               </div>
               
@@ -64,6 +65,19 @@
                         class="select select-bordered w-48 focus:outline-none focus:border-[#eb6864]">
                   <option [ngValue]="null">All Programs</option>
                   <option *ngFor="let prog of listProgramme" [ngValue]="prog.id">{{prog.heure}}</option>
+                </select>
+              </div>
+
+              <div class="form-control" *ngIf="filterType === 'offre'">
+                <label for="offerFilter" class="sr-only">Filter by offer</label>
+                <select [(ngModel)]="selectedOffre" 
+                        id="offerFilter"
+                        name="offerFilter"
+                        aria-label="Select offer filter"
+                        (ngModelChange)="filterPhotos()"
+                        class="select select-bordered w-48 focus:outline-none focus:border-[#eb6864]">
+                  <option [ngValue]="null">All Offers</option>
+                  <option *ngFor="let offre of listOffre" [ngValue]="offre.id">{{offre.label}}</option>
                 </select>
               </div>
       
@@ -117,6 +131,10 @@
                   <div *ngIf="photo.programme" class="flex items-center gap-2">
                     <i class="bi bi-clock text-warning"></i>
                     <span class="font-medium">{{ photo.programme.heure }}</span>
+                  </div>
+                  <div *ngIf="photo.offre" class="flex items-center gap-2">
+                    <i class="bi bi-tag text-info"></i>
+                    <span class="font-medium">{{ photo.offre.label }}</span>
                   </div>
                 </div>
               </td>
@@ -180,6 +198,9 @@
               </a>
               <a class="tab" [class.tab-active]="activeTab === 'program'" (click)="setActiveTab('program')">
                 <i class="bi bi-clock me-2"></i>Program Photo
+              </a>
+              <a class="tab" [class.tab-active]="activeTab === 'offer'" (click)="setActiveTab('offer')">
+                <i class="bi bi-tag me-2"></i>Offer Photo
               </a>
             </div>
   
@@ -308,6 +329,50 @@
                 <span class="loading loading-spinner loading-lg text-primary"></span>
                    Loading ...
                 </button>
+                </div>
+              </form>
+
+              <!-- Offer Photo Form -->
+              <form *ngSwitchCase="'offer'" [formGroup]="photoFormOffre" (ngSubmit)="submitForm()" class="space-y-4">
+                <div class="form-control">
+                  <label class="label">Photo URL</label>
+                  <input type="text" formControlName="url" 
+                         class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
+                         placeholder="Enter photo URL"/>
+                  <div class="text-error text-sm mt-1" 
+                       *ngIf="photoFormOffre.get('url')?.invalid && photoFormOffre.get('url')?.touched">
+                    This field is required
+                  </div>
+                </div>
+
+                <div class="form-control">
+                    <label for="offerSelect" class="label">Select Offer</label>
+                    <select id="offerSelect"
+                            formControlName="offre" 
+                            aria-label="Select an offer"
+                            class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
+                      <option [ngValue]="null">Choose an offer</option>
+                      <option *ngFor="let offre of listOffre" [ngValue]="offre">
+                        {{offre.label}}
+                      </option>
+                    </select>
+                  <div class="text-error text-sm mt-1" 
+                       *ngIf="photoFormOffre.get('offre')?.invalid && photoFormOffre.get('offre')?.touched">
+                    This field is required
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                  <button type="button" class="btn btn-ghost" (click)="toggleModal()">
+                    Cancel
+                  </button>
+                  <button *ngIf="!isAddLoading" type="submit" [disabled]="photoFormOffre.invalid" class="btn btn-primary">
+                    {{ photoFormOffre.value.id ? 'Update' : 'Save' }}
+                  </button>
+                  <button *ngIf="isAddLoading" type="button" class="w-full">
+                    <span class="loading loading-spinner loading-lg text-primary"></span>
+                    Loading ...
+                  </button>
                 </div>
               </form>
             </div>
