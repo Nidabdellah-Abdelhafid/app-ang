@@ -267,7 +267,7 @@
                             class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
                       <option [ngValue]="null">Choose a planning</option>
                       <option *ngFor="let planing of listPlaning" [ngValue]="planing">
-                        {{planing.label}}
+                        {{planing.label}} - ({{planing?.offre?.label}})
                       </option>
                     </select>
                   <div class="text-error text-sm mt-1" 
@@ -307,7 +307,7 @@
                             class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
                       <option [ngValue]="null">Choose a program</option>
                       <option *ngFor="let programme of listProgramme" [ngValue]="programme">
-                        {{programme.label}}
+                        {{programme.label}}  - ({{programme?.planing_programmes?.label}})
                       </option>
                     </select>
                   <div class="text-error text-sm mt-1" 
@@ -353,7 +353,7 @@
                             class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
                       <option [ngValue]="null">Choose an offer</option>
                       <option *ngFor="let offre of listOffre" [ngValue]="offre">
-                        {{offre.label}}
+                        {{offre.label}} - ({{offre?.pays?.label}})
                       </option>
                     </select>
                   <div class="text-error text-sm mt-1" 

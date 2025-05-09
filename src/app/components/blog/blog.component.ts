@@ -4,6 +4,7 @@ import { AccountService } from 'src/app/services/account.service';
 import { JwtTokenService } from 'src/app/services/jwt-token.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { PaysService } from 'src/app/services/pays/pays.service';
 
 @Component({
   selector: 'app-blog',
@@ -19,24 +20,28 @@ export class BlogComponent implements OnInit {
   isAdmin: boolean = false;
   isLoading: boolean = false;
   currentUser: any = null;
-isAddLoading: boolean = false;
+  isAddLoading: boolean = false;
+  listPays: any;
 
   blogForm = new FormGroup({
     id: new FormControl(null),
     title: new FormControl('', [Validators.required]),
     subTitle: new FormControl('', [Validators.required]),
     imageUrl: new FormControl('', [Validators.required]),
-    description: new FormControl('', [Validators.required])
+    description: new FormControl('', [Validators.required]),
+    pays: new FormControl(null, [Validators.required])
   });
 
   constructor(
     private blogService: BlogService,
+    private paysService: PaysService,
     private accountService: AccountService,
     private jwtTokenService: JwtTokenService) { 
     
   }
   ngOnInit(): void {
     this.getBlogs();
+    this.getPays();
     this.accountService.authStatus.subscribe(res => {
       this.currentUser = this.jwtTokenService.getInfos();
       if (this.currentUser && this.currentUser.roles) {
@@ -56,6 +61,17 @@ isAddLoading: boolean = false;
       error: (err) => {
         console.error('Error fetching blogs', err);
         this.isLoading = false;
+      }
+    });
+  }
+
+  getPays() {
+    this.paysService.getAll().subscribe({
+      next: (res) => {
+        this.listPays = res;
+      },
+      error: (err) => {
+        console.error('Error fetching countries', err);
       }
     });
   }
@@ -117,7 +133,7 @@ this.isAddLoading = true;
 
   editBlog(blog: any) {
     this.blogForm.patchValue(blog);
-    console.log(blog);
+    // console.log(blog);
     this.toggleModal();
   }
 

@@ -31,6 +31,7 @@
                 <th class="font-medium">Image</th>
                 <th class="font-medium">Title</th>
                 <th class="font-medium">SubTitle</th>
+                <th class="font-medium">Country</th>
                 <th class="font-medium">Description</th>
                 <th class="text-right" *ngIf="isAdmin">Actions</th>
               </tr>
@@ -43,6 +44,7 @@
                 </td>
                 <td class="font-medium">{{ blog.title }}</td>
                 <td>{{ blog.subTitle }}</td>
+                <td>{{ blog.pays?.label }}</td>
                 <td class="max-w-xs">
                   <p class="truncate">{{ blog.description }}</p>
                 </td>
@@ -135,6 +137,23 @@
                        placeholder="Enter blog subTitle"/>
                 <div class="text-error" *ngIf="blogForm.get('subTitle')?.invalid && (blogForm.get('subTitle')?.touched || blogForm.get('subTitle')?.dirty)">
                   <div *ngIf="blogForm.get('subTitle')?.errors?.['required']">subTitle is required</div>
+                </div>
+              </div>
+
+              <!-- Country Selection -->
+              <div class="form-control">
+                <label for="countrySelect" class="label">Country</label>
+                <select id="countrySelect"
+                        formControlName="pays"
+                        aria-label="Select a country"
+                        class="select select-bordered w-full focus:outline-none focus:border-[#eb6864]">
+                  <option [ngValue]="null">Select a country</option>
+                  <option *ngFor="let pays of listPays" [ngValue]="pays">
+                    {{pays.label}}
+                  </option>
+                </select>
+                <div class="text-error" *ngIf="blogForm.get('pays')?.invalid && (blogForm.get('pays')?.touched || blogForm.get('pays')?.dirty)">
+                  <div *ngIf="blogForm.get('pays')?.errors?.['required']">Country is required</div>
                 </div>
               </div>
   
