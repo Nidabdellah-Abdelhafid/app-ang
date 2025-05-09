@@ -161,28 +161,10 @@ export class PhotoComponent implements OnInit {
     this.isModalOpen = !this.isModalOpen;
     if (!this.isModalOpen) {
       this.clearInput();
-    }else {
-      this.setActiveTab('country'); // Ensure currentForm is set when opening modal
     }
   }
 
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-    switch(tab) {
-      case 'country':
-        this.currentForm = this.photoForm;
-        break;
-      case 'planning':
-        this.currentForm = this.photoFormPlaning;
-        break;
-      case 'program':
-        this.currentForm = this.photoFormProgramme;
-        break;
-      case 'offer': // Add this case
-        this.currentForm = this.photoFormOffre;
-        break;
-    }
-  }
+  
 
   getPays() {
     this.paysService.getAll().subscribe({
@@ -250,6 +232,24 @@ export class PhotoComponent implements OnInit {
       this.photoFormOffre.patchValue(photo);
     }
     this.toggleModal();
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+    switch(tab) {
+      case 'country':
+        this.currentForm = this.photoForm;
+        break;
+      case 'planning':
+        this.currentForm = this.photoFormPlaning;
+        break;
+      case 'program':
+        this.currentForm = this.photoFormProgramme;
+        break;
+      case 'offer': // Add this case
+        this.currentForm = this.photoFormOffre;
+        break;
+    }
   }
 
   // Delete photo
