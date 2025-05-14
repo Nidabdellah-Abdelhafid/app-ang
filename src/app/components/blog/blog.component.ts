@@ -48,6 +48,15 @@ export class BlogComponent implements OnInit {
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+
+    this.blogForm.get('title')?.valueChanges.subscribe(value => {
+      if (value) {
+        const isDuplicate = this.checkDuplicateTitle(value, this.blogForm.get('id')?.value);
+        if (isDuplicate) {
+          this.blogForm.get('title')?.setErrors({ duplicate: true });
+        }
+      }
+    });
   }
 
   getBlogs() {
@@ -168,6 +177,17 @@ this.isAddLoading = true;
         });
       }
     });
+  }
+
+  checkDuplicateTitle(title: any, id: any): boolean {
+    if (!this.listBlog || !title) {
+      return false;
+    }
+    
+    // If editing an existing blog, exclude it from the check
+    return this.listBlog.some((blog: any) => 
+      blog.title.toLowerCase() === title.toLowerCase() && blog.id !== id
+    );
   }
 
   toggleModal() {

@@ -96,11 +96,18 @@
                        formControlName="label" 
                        class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
                        placeholder="Enter theme label"/>
-                <div class="text-error text-sm mt-1" 
-                     *ngIf="themeForm.get('label')?.invalid && themeForm.get('label')?.touched">
+                <div class="text-error" 
+                  *ngIf="themeForm.get('label')?.invalid && (themeForm.get('label')?.touched || themeForm.get('label')?.dirty)">
+                
+                <div 
+                     *ngIf="themeForm.get('label')?.getError('required')" class="text-danger">
                   This field is required
                 </div>
+                <div *ngIf="themeForm.get('label')?.errors?.['duplicate']">
+                  This theme name already exists. Please choose a different name.
+                </div>
               </div>
+            </div>
             </div>
   
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t">

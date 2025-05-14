@@ -97,11 +97,17 @@
                        formControlName="label" 
                        class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
                        placeholder="Enter badge label"/>
-                <div class="text-error text-sm mt-1" 
-                     *ngIf="badgeForm.get('label')?.invalid && badgeForm.get('label')?.touched">
+              <div class="text-error" 
+                  *ngIf="badgeForm.get('label')?.invalid && (badgeForm.get('label')?.touched || badgeForm.get('label')?.dirty)">
+                <div  
+                     *ngIf="badgeForm.get('label')?.getError('required')" class="text-danger">
                   This field is required
                 </div>
+                <div *ngIf="badgeForm.get('label')?.errors?.['duplicate']">
+                  This badge name already exists. Please choose a different name.
+                </div>
               </div>
+            </div>
             </div>
   
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t">

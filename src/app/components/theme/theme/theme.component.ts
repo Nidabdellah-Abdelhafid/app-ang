@@ -40,6 +40,15 @@ isAddLoading: boolean = false;
         this.isAdmin = this.currentUser.roles.includes('ADMIN');
       }
     });
+
+    this.themeForm.get('label')?.valueChanges.subscribe(value => {
+      if (value) {
+        const isDuplicate = this.checkDuplicateLabel(value, this.themeForm.get('id')?.value);
+        if (isDuplicate) {
+          this.themeForm.get('label')?.setErrors({ duplicate: true });
+        }
+      }
+    });
   }
 
   toggleModal() {
@@ -160,6 +169,17 @@ this.isAddLoading = true;
         }
       });
     }
+  }
+
+  checkDuplicateLabel(label: any, id: any): boolean {
+    if (!this.listTheme || !label) {
+      return false;
+    }
+    
+    // If editing an existing theme, exclude it from the check
+    return this.listTheme.some((theme: any) => 
+      theme.label.toLowerCase() === label.toLowerCase() && theme.id !== id
+    );
   }
 
   clearInput() {

@@ -39,6 +39,15 @@ isAddLoading: boolean = false;
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+
+    this.badgeForm.get('label')?.valueChanges.subscribe(value => {
+      if (value) {
+        const isDuplicate = this.checkDuplicateLabel(value, this.badgeForm.get('id')?.value);
+        if (isDuplicate) {
+          this.badgeForm.get('label')?.setErrors({ duplicate: true });
+        }
+      }
+    });
   }
 
   toggleModal() {
@@ -158,6 +167,17 @@ this.isAddLoading = true;
         }
       });
     }
+  }
+
+  checkDuplicateLabel(label: any, id: any): boolean {
+    if (!this.listBadge || !label) {
+      return false;
+    }
+    
+    // If editing an existing badge, exclude it from the check
+    return this.listBadge.some((badge: any) => 
+      badge.label.toLowerCase() === label.toLowerCase() && badge.id !== id
+    );
   }
 
   clearInput(){

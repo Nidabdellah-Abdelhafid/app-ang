@@ -191,9 +191,15 @@
                     <input type="text" formControlName="label" 
                            class="input input-bordered w-full focus:outline-none focus:border-[#eb6864]" 
                            placeholder="Enter offer name"/>
-                    <div *ngIf="offreForm.get('label')?.invalid && offreForm.get('label')?.touched"
-                         class="text-sm text-error mt-1">
-                      Please enter a label
+                   <div class="text-error" 
+                           *ngIf="offreForm.get('label')?.invalid && (offreForm.get('label')?.touched || offreForm.get('label')?.dirty)">
+
+                    <div *ngIf="offreForm.get('label')?.getError('required')" class="text-danger">
+                      This field is Required!
+                    </div>
+                    <div *ngIf="offreForm.get('label')?.errors?.['duplicate']">
+                      This offer name already exists. Please choose a different name.
+                    </div>
                     </div>
                   </div>
   

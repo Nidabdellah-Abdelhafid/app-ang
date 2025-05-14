@@ -83,6 +83,14 @@ export class OffreComponent implements OnInit {
       }
     });
     this.filteredOffres = this.listOffre || [];
+    this.offreForm.get('label')?.valueChanges.subscribe(value => {
+      if (value) {
+        const isDuplicate = this.checkDuplicateLabel(value, this.offreForm.get('id')?.value);
+        if (isDuplicate) {
+          this.offreForm.get('label')?.setErrors({ duplicate: true });
+        }
+      }
+    });
   }
 
   getOffre() {
@@ -416,6 +424,17 @@ export class OffreComponent implements OnInit {
       }
     });
 
+  }
+
+  checkDuplicateLabel(label: any, id: any): boolean {
+    if (!this.listOffre || !label) {
+      return false;
+    }
+    
+    // If editing an existing offer, exclude it from the check
+    return this.listOffre.some((offre: any) => 
+      offre.label.toLowerCase() === label.toLowerCase() && offre.id !== id
+    );
   }
 
   toggleShowOffreModal() {

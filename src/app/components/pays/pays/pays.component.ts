@@ -64,6 +64,16 @@ isAddLoading: boolean = false;
         this.isAdmin = this.currentUser.roles.includes('ADMIN'); 
       }
     });
+
+    // Add listener for label changes to check for duplicates
+    this.paysForm.get('label')?.valueChanges.subscribe(value => {
+      if (value) {
+        const isDuplicate = this.checkDuplicateLabel(value, this.paysForm.get('id')?.value);
+        if (isDuplicate) {
+          this.paysForm.get('label')?.setErrors({ duplicate: true });
+        }
+      }
+    });
   }
 
   // Get all countries
@@ -73,7 +83,7 @@ isAddLoading: boolean = false;
       next: (res) => {
         this.listPays = res;
         this.totalPages = Math.ceil(this.listPays.length / this.itemsPerPage);
-      },
+      }, 
       error: (err) => {
         console.error('Error fetching countries', err);
       },
@@ -122,13 +132,14 @@ isAddLoading: boolean = false;
       december: pays.december || 1
     });
   }
+
   toggleModal() {
     this.isPaysModalOpen = !this.isPaysModalOpen;
     if (!this.isPaysModalOpen) {
       this.clearInput();
     }
   }
-  // Delete country
+
   deletePays(pays: any) {
     Swal.fire({
       title: "Are you sure?",
@@ -158,55 +169,67 @@ isAddLoading: boolean = false;
     });
   }
 
-submitForm() {
-this.isAddLoading = true;
-  if (this.paysForm.invalid) {
-    return;
+  submitForm() {
+  this.isAddLoading = true;
+    if (this.paysForm.invalid) {
+      return;
+    }
+
+    const pays = this.paysForm.value;
+    // console.log(pays);
+
+    if (pays.id) {
+      this.paysService.update(pays).subscribe({
+        next: (res) => {
+          this.getPays();
+          this.toggleModal();
+          Swal.fire({
+            title: "Updated!",
+            text: "Your item has been updated.",
+            icon: "success"
+          });
+          this.isAddLoading = false;
+        },
+        error: (err) => {
+          this.isAddLoading = false;
+          console.error('Error updating country', err);
+          alert('An error occurred while updating the country.');
+        }
+      });
+    } else {
+      this.paysService.create(pays).subscribe({
+        next: (res) => {
+          this.getPays(); 
+          this.toggleModal();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Country created successfully!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          this.paysForm.reset(); // Reset form after successful submission
+          this.isAddLoading = false;
+        },
+        error: (err) => {
+          this.isAddLoading = false;
+          console.error('Error creating country', err);
+          alert('An error occurred while creating the country.');
+        }
+      });
+    }
   }
 
-  const pays = this.paysForm.value;
-  // console.log(pays);
-  if (pays.id) {
-    this.paysService.update(pays).subscribe({
-      next: (res) => {
-        this.getPays();
-        this.toggleModal();
-        Swal.fire({
-          title: "Updated!",
-          text: "Your item has been updated.",
-          icon: "success"
-        });
-        this.isAddLoading = false;
-      },
-      error: (err) => {
-        this.isAddLoading = false;
-        console.error('Error updating country', err);
-        alert('An error occurred while updating the country.');
-      }
-    });
-  } else {
-    this.paysService.create(pays).subscribe({
-      next: (res) => {
-        this.getPays(); 
-        this.toggleModal();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Country created successfully!",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        this.paysForm.reset(); // Reset form after successful submission
-        this.isAddLoading = false;
-      },
-      error: (err) => {
-        this.isAddLoading = false;
-        console.error('Error creating country', err);
-        alert('An error occurred while creating the country.');
-      }
-    });
+  checkDuplicateLabel(label: any, id: any): boolean {
+    if (!this.listPays || !label) {
+      return false;
+    }
+    
+    // If editing an existing country, exclude it from the check
+    return this.listPays.some((pays: any) => 
+      pays.label.toLowerCase() === label.toLowerCase() && pays.id !== id
+    );
   }
-}
 
 
   clearInput() {

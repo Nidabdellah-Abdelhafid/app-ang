@@ -115,6 +115,9 @@
                        placeholder="Enter blog title"/>
                 <div class="text-error" *ngIf="blogForm.get('title')?.invalid && (blogForm.get('title')?.touched || blogForm.get('title')?.dirty)">
                   <div *ngIf="blogForm.get('title')?.errors?.['required']">Title is required</div>
+                  <div *ngIf="blogForm.get('title')?.errors?.['duplicate']">
+                    This blog title already exists. Please choose a different title.
+                  </div>
                 </div>
               </div>
   

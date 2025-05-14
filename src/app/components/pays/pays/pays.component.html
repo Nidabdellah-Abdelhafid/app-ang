@@ -120,6 +120,9 @@
                         <div *ngIf="paysForm.get('label')?.getError('required')" class="text-danger">
                         This field is Required!
                         </div>
+                        <div *ngIf="paysForm.get('label')?.errors?.['duplicate']">
+                          This country name already exists. Please choose a different name.
+                        </div>
                     </div>
                     </div>
 
