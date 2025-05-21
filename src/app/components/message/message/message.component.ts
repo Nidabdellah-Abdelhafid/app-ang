@@ -38,6 +38,7 @@ export class MessageComponent implements OnInit , AfterViewChecked {
   users: any[] = [];
   selectedUser: any = null;
   filteredMessages: Message[] = [];
+  isProfileOpen: boolean = false;
 
   constructor(private messageService: MessageService, 
               private jwtTokenService: JwtTokenService,
@@ -179,5 +180,9 @@ loadUsers() {
       },
       error: error => console.error('Error sending message:', error)
     });
+}
+
+toggleUserProfile() {
+  this.isProfileOpen = !this.isProfileOpen;
 }
 }
