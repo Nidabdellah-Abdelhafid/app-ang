@@ -43,11 +43,7 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.isloading= true;
-    this.authService.getAuthUser().subscribe(res => {
-      this.authUser = res;
-      this.isloading= false;
-    });
+    this.getProfile();
   }
 
   getProfile(){

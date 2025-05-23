@@ -67,6 +67,7 @@
                 <th class="font-medium">Number of Days</th>
                 <th class="font-medium">Location</th>
                 <th class="font-medium">Country</th>
+                <th class="font-medium">Favorite</th>
                 <th class="font-medium">Themes</th>
                 <th class="font-medium">Badges</th>
                 <th class="text-right" *ngIf="isAdmin">Actions</th>
@@ -110,6 +111,15 @@
                   </div>
                 </td>
                 <td>{{ offre?.pays['label'] }}</td>
+                <td>
+                  <button title="Toggle favorite" (click)="toggleFavorite(offre)" 
+                      class="btn btn-ghost btn-circle">
+                      <i class="bi" 
+                        [class.bi-heart-fill]="isOffreFavorited(offre)" 
+                        [class.bi-heart]="!isOffreFavorited(offre)"
+                        [class.text-red-500]="isOffreFavorited(offre)"></i>
+                  </button>
+                </td>
                 <td>
                   <div class="flex flex-wrap gap-1 w-28">
                     <span *ngFor="let theme of offre.themes" 

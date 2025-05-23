@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import Swal from 'sweetalert2'
 import { AccountService } from 'src/app/services/account.service';
 import { JwtTokenService } from 'src/app/services/jwt-token.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-offre',
@@ -38,6 +39,9 @@ export class OffreComponent implements OnInit {
   selectedPays: any = null;
   isLoading: boolean = false;
   isAddLoading: boolean = false;
+  isFavorite: boolean = false;
+  authUser: any;
+  isloading: boolean = false;
   
   constructor(
     private offreService: OffreService,
@@ -47,6 +51,7 @@ export class OffreComponent implements OnInit {
     private badgeService:BadgeService,
     private accountService: AccountService,
     private jwtTokenService: JwtTokenService,
+    private authService: AuthService,
   ) {
     this.offreForm = this.fb.group({
       id: [null],
@@ -76,6 +81,7 @@ export class OffreComponent implements OnInit {
     this.getPays();
     this.getTheme();
     this.getBadge();
+    this.getProfile();
     this.accountService.authStatus.subscribe(res => {
       this.currentUser = this.jwtTokenService.getInfos();
       if (this.currentUser && this.currentUser.roles) {
@@ -93,6 +99,22 @@ export class OffreComponent implements OnInit {
     });
   }
 
+  getProfile(){
+    try{
+      this.isloading= true;
+      this.authService.getAuthUser().subscribe(res => {
+        this.authUser = res;
+        this.isloading= false;
+      });
+
+    }catch(err){
+        throw Error("User data not found!!");
+    }finally{
+      this.isloading= false;
+    }
+    
+  }
+
   getOffre() {
     this.isLoading = true;
     this.offreService.getAll().subscribe({
@@ -101,6 +123,7 @@ export class OffreComponent implements OnInit {
         this.listOffre = res;
         this.filteredOffres = res;
         this.calculateTotalPages();
+        console.log(this.listOffre);
       },
       error: (err) => {
         console.error('Error fetching offers', err);
@@ -398,6 +421,7 @@ export class OffreComponent implements OnInit {
 
   showOffre(offre: any) {
     this.selectedOffre = offre;
+    this.isFavorite = offre.isFavorite || false;
     // console.log("selected :",offre);
     // Update the subscription handling
     this.offreService.getOffreBadges(offre.id).subscribe({
@@ -445,4 +469,58 @@ export class OffreComponent implements OnInit {
       this.selectedOffre = null;
     }
   }
+
+  isOffreFavorited(offre: any): boolean {
+    if (!offre?.usersFvrOffre || !this.authUser) return false;
+    return offre.usersFvrOffre.some((user: any) => user.id === this.authUser.id);
+}
+
+  toggleFavorite(offre: any) {
+    const data = {
+      offre: offre,
+      appUser: this.authUser
+    };
+    
+
+    console.log("data : ",data);
+
+    if (this.isFavorite) {
+      this.offreService.removeFavoriteFromOffre(data).subscribe({
+        next: () => {
+          this.isFavorite = false;
+          this.getOffre();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Removed from favorites!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        },
+        error: (err) => {
+          console.error('Error removing favorite', err);
+          Swal.fire('Error', 'Failed to remove from favorites', 'error');
+        }
+      });
+    } else {
+      this.offreService.addFavoriteToOffre(data).subscribe({
+        next: () => {
+          this.isFavorite = true;
+          this.getOffre();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Added to favorites!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        },
+        error: (err) => {
+          console.error('Error adding favorite', err);
+          Swal.fire('Error', 'Failed to add to favorites', 'error');
+        }
+      });
+    }
+  }
+  
 }

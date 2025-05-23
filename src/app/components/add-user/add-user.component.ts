@@ -1,6 +1,4 @@
 import { Router } from '@angular/router';
-import { AccountService } from '../../services/account.service';
-import { JwtTokenService } from './../../services/jwt-token.service';
 import { User } from 'src/app/models/user';
 import { UserService } from './../../services/user.service';
 import { Component, OnInit } from '@angular/core';

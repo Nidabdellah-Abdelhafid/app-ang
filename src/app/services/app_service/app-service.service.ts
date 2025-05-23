@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
 interface Badge {
   id: number;
   label: string;
@@ -63,6 +64,14 @@ export class AppServiceService {
     return this.http.get<Theme[]>(`${environment.apiUrl}/api/offres/${offreId}/themes`).pipe(
       map(response => Array.isArray(response) ? response : [])
     );
+  }
+
+  addFavoriteToOffre(data: any) {
+    return this.http.post(`${environment.apiUrl}/api/offres/userFvrOffre`, data);
+  }
+
+  removeFavoriteFromOffre(data: any) {
+    return this.http.delete(`${environment.apiUrl}/api/offres/userFvrOffre`, { body: data });
   }
 
 }
