@@ -1,22 +1,22 @@
   <div class="flex h-[80vh] bg-base-200">
     <!-- Users List Sidebar -->
-    <div class="w-1/4 bg-base-100 border-r">
+    <div class="w-1/4 bg-base-100 border-r flex flex-col">
         <div class="p-4 border-b">
             <h2 class="text-xl font-bold">Users</h2>
         </div>
-        <div class="overflow-y-auto h-[calc(100vh-4rem)]">
+        <div class="flex-1 custom-scrollbar">
             <div *ngFor="let user of users" 
-                 (click)="selectUser(user)"
-                 class="flex items-center p-4 hover:bg-base-200 cursor-pointer"
-                 [class.bg-base-300]="selectedUser?.email === user.email">
+                (click)="selectUser(user)"
+                class="flex items-center p-4 hover:bg-base-200 cursor-pointer transition-colors duration-200"
+                [class.bg-base-300]="selectedUser?.email === user.email">
                 <div class="avatar">
-                    <div class="w-10 rounded-full">
-                        <img alt="" [src]="decode(user.userPhoto) || 'assets/default-avatar.png'" [alt]="user.email">
+                    <div class="w-10 rounded-full ring ring-base-200 ring-offset-base-100 ring-offset-1">
+                        <img alt="" [src]="decode(user.userPhoto) || 'assets/default-avatar.png'" [alt]="user.email" class="object-cover">
                     </div>
                 </div>
                 <div class="ml-4">
                     <div class="font-medium">{{user.email}}</div>
-                    <span *ngIf="user.roles?.includes('ADMIN')" class="badge badge-sm">Admin</span>
+                    <span *ngIf="user.roles?.includes('ADMIN')" class="badge badge-sm badge-primary">Admin</span>
                 </div>
             </div>
         </div>
@@ -155,7 +155,7 @@
         </div>
 
         <!-- Messages loop -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-4" *ngIf="selectedUser" #scrollContainer>
+        <div class="flex-1 custom-scrollbar p-4 space-y-4" *ngIf="selectedUser" #scrollContainer>
             <div *ngFor="let message of filteredMessages">
                 <!-- Received Messages -->
                 <div *ngIf="message.sender?.email !== currentUserEmail" class="chat chat-start">

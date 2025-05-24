@@ -123,7 +123,7 @@ export class OffreComponent implements OnInit {
         this.listOffre = res;
         this.filteredOffres = res;
         this.calculateTotalPages();
-        console.log(this.listOffre);
+        // console.log(this.listOffre);
       },
       error: (err) => {
         console.error('Error fetching offers', err);
@@ -421,7 +421,7 @@ export class OffreComponent implements OnInit {
 
   showOffre(offre: any) {
     this.selectedOffre = offre;
-    this.isFavorite = offre.isFavorite || false;
+    // this.isFavorite = offre.isFavorite || false;
     // console.log("selected :",offre);
     // Update the subscription handling
     this.offreService.getOffreBadges(offre.id).subscribe({
@@ -481,8 +481,7 @@ export class OffreComponent implements OnInit {
       appUser: this.authUser
     };
     
-
-    console.log("data : ",data);
+    // console.log("data : ",data);
 
     if (this.isFavorite) {
       this.offreService.removeFavoriteFromOffre(data).subscribe({
