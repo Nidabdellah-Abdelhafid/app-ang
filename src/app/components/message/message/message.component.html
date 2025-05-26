@@ -280,13 +280,13 @@
                        class="input input-bordered flex-1 focus:outline-none focus:border-primary" 
                        placeholder="Type a message..."/>
             
-                       <button 
+                    <button 
                        (click)="sendMessage()" 
                        class="btn btn-circle btn-primary btn-sm flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                       [class.opacity-50]="!newMessage.trim() && !selectedFile"
-                       [disabled]="!newMessage.trim() && !selectedFile"
+                       [class.opacity-50]="!newMessage.trim() && !selectedFile || isSending"
+                       [disabled]="!newMessage.trim() && !selectedFile || isSending"
                        title="Send Message">
-                       <i class="bi bi-send-fill"></i>
+                       <i class="bi" [class.bi-send-fill]="!isSending" [class.bi-hourglass-split]="isSending"></i>
                    </button>
               </div>
               

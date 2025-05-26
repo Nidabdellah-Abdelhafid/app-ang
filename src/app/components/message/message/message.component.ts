@@ -50,6 +50,7 @@ export class MessageComponent implements OnInit, AfterViewChecked {
   private shouldScrollToBottom = true;
   isImageModalOpen: boolean = false;
   selectedImage: SafeResourceUrl | null = null;
+  isSending: boolean = false;
 
   constructor(private messageService: MessageService, 
               private jwtTokenService: JwtTokenService,
@@ -202,6 +203,8 @@ export class MessageComponent implements OnInit, AfterViewChecked {
       return;
     }
 
+    this.isSending = true;
+
     const messageData = {
       contenu: this.newMessage.trim() || (this.selectedFile ? this.selectedFile.name : ''),
       date: new Date().toISOString(),
@@ -236,13 +239,28 @@ export class MessageComponent implements OnInit, AfterViewChecked {
       this.messageService.create(textFormData).subscribe({
         next: () => {
           // Then send file message
-          this.messageService.create(formData).subscribe(this.handleMessageResponse.bind(this));
+          this.messageService.create(formData).subscribe({
+            next: this.handleMessageResponse.bind(this),
+            error: (error) => {
+              console.error('Error sending file message:', error);
+              this.isSending = false;
+            }
+          });
         },
-        error: error => console.error('Error sending text message:', error)
+        error: error => {
+          console.error('Error sending text message:', error);
+          this.isSending = false;
+        }
       });
     } else {
       // Send single message (either text or file)
-      this.messageService.create(formData).subscribe(this.handleMessageResponse.bind(this));
+      this.messageService.create(formData).subscribe({
+        next: this.handleMessageResponse.bind(this),
+        error: (error) => {
+          console.error('Error sending message:', error);
+          this.isSending = false;
+        }
+      });
     }
   }
 
@@ -260,6 +278,7 @@ export class MessageComponent implements OnInit, AfterViewChecked {
         this.shouldScrollToBottom = true;
       }
     });
+    this.isSending = false;
   }
 
   scrollToBottom(): void {
