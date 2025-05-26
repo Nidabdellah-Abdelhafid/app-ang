@@ -11,7 +11,7 @@
                 [class.bg-base-300]="selectedUser?.email === user.email">
                 <div class="avatar">
                     <div class="w-10 rounded-full ring ring-base-200 ring-offset-base-100 ring-offset-1">
-                        <img alt="" [src]="decode(user.userPhoto) || 'assets/default-avatar.png'" [alt]="user.email" class="object-cover">
+                        <img alt="" [src]="decodeUser(user.userPhoto) || 'assets/default-avatar.png'" [alt]="user.email" class="object-cover">
                     </div>
                 </div>
                 <div class="ml-4">
@@ -43,7 +43,7 @@
                         <div class="flex">
                             <div class="avatar online">
                             <div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 transition-all duration-300 group-hover:scale-110">
-                                <img alt="" [src]="decode(selectedUser.userPhoto) || 'assets/default-avatar.png'" 
+                                <img alt="" [src]="decodeUser(selectedUser.userPhoto) || 'assets/default-avatar.png'" 
                                     [alt]="selectedUser.email"
                                     class="object-cover">
                             </div>
@@ -81,7 +81,7 @@
                                 <div class="flex flex-col items-center">
                                     <div class="avatar">
                                         <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                            <img alt="" [src]="decode(selectedUser.userPhoto) || 'assets/default-avatar.png'" 
+                                            <img alt="" [src]="decodeUser(selectedUser.userPhoto) || 'assets/default-avatar.png'" 
                                                 [alt]="selectedUser.email">
                                         </div>
                                     </div>
@@ -155,13 +155,20 @@
         </div>
 
         <!-- Messages loop -->
-        <div class="flex-1 custom-scrollbar p-4 space-y-4" *ngIf="selectedUser" #scrollContainer>
+        <div class="flex-1 custom-scrollbar p-4 space-y-4 relative" *ngIf="selectedUser" #scrollContainer (scroll)="onScroll($event)">
+            <!-- Floating Scroll Button -->
+            <button *ngIf="showScrollButton"
+                (click)="scrollToBottom()"
+                class="fixed bottom-52 right-2 btn btn-circle btn-primary animate-bounce shadow-lg z-50 transition-all duration-300 hover:scale-110"
+                title="Scroll to bottom">
+                <i class="bi bi-arrow-down-circle-fill"></i>
+            </button>
             <div *ngFor="let message of filteredMessages">
                 <!-- Received Messages -->
                 <div *ngIf="message.sender?.email !== currentUserEmail" class="chat chat-start">
                     <div class="chat-image avatar">
                         <div class="w-10 rounded-full">
-                            <img alt="" [src]="decode(message.sender?.userPhoto) || 'assets/default-avatar.png'" 
+                            <img alt="" [src]="decodeUser(message.sender?.userPhoto) || 'assets/default-avatar.png'" 
                                 [alt]="message.sender?.email">
                         </div>
                     </div>
@@ -169,21 +176,76 @@
                         {{message.sender?.email}}
                         <time class="text-xs opacity-50">{{message.date | date:'shortTime'}}</time>
                     </div>
-                    <div class="chat-bubble">{{message.contenu}}</div>
+                    <!-- Message Content Based on Type -->
+                    <div class="chat-bubble">
+                        <!-- Text Message -->
+                        <div *ngIf="message.messageType === 'TEXT'">
+                            {{message.contenu}}
+                        </div>
+                        <!-- Image Message -->
+                        <div *ngIf="message.messageType === 'IMAGE'" class="max-w-sm cursor-zoom-in hover:opacity-90 transition-opacity">
+                            <img [src]="decode(message.mediaUrl)" 
+                                 alt="Image" 
+                                 class="rounded-lg max-h-48 w-auto hover:shadow-lg transition-shadow"
+                                 (click)="openImageModal(decode(message.mediaUrl))"
+                                 onerror="this.src='assets/default-image.png'">
+                        </div>
+                        <!-- Document Message -->
+                        <div *ngIf="message.messageType === 'DOCUMENT'" class="flex items-center gap-2 bg-base-200 p-2 rounded-lg">
+                            <i class="bi bi-file-earmark-text text-2xl"></i>
+                            <div class="flex flex-col">
+                                <span class="text-sm">{{message.fileName}}</span>
+                                <a [href]="decode(message.mediaUrl)"
+                                [download]="message.fileName"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-xs text-primary hover:underline">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="chat-footer opacity-50">Seen at {{message.date | date:'shortTime'}}</div>
                 </div>
 
                 <!-- Sent Messages -->
                 <div *ngIf="message.sender?.email === currentUserEmail" class="chat chat-end">
                     <div class="chat-header">
-                        
-                    <time class="text-xs opacity-50">{{message.date | date:'shortTime'}}</time>
-                    {{message.sender?.email}}
+                        <time class="text-xs opacity-50">{{message.date | date:'shortTime'}}</time>
+                        {{message.sender?.email}}
                     </div>
-                    <div class="chat-bubble chat-bubble-primary">{{message.contenu}}</div>
+                    <!-- Message Content Based on Type -->
+                    <div class="chat-bubble chat-bubble-primary">
+                        <!-- Text Message -->
+                        <div *ngIf="message.messageType === 'TEXT'">
+                            {{message.contenu}}
+                        </div>
+                        <!-- Image Message -->
+                        <div *ngIf="message.messageType === 'IMAGE'" class="max-w-sm cursor-zoom-in hover:opacity-90 transition-opacity">
+                            <img [src]="decode(message.mediaUrl)" 
+                                 alt="Image" 
+                                 class="rounded-lg max-h-48 w-auto hover:shadow-lg transition-shadow"
+                                 (click)="openImageModal(decode(message.mediaUrl))"
+                                 onerror="this.src='assets/default-image.png'">
+                        </div>
+                        <!-- Document Message -->
+                        <div *ngIf="message.messageType === 'DOCUMENT'" class="flex items-center gap-2 bg-base-200/20 p-2 rounded-lg">
+                            <i class="bi bi-file-earmark-text text-2xl"></i>
+                            <div class="flex flex-col">
+                                <span class="text-sm">{{message.fileName}}</span>
+                                <a [href]="decode(message.mediaUrl)"
+                                [download]="message.fileName"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-xs text-primary hover:underline">
+                                 Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="chat-image avatar">
                         <div class="w-10 rounded-full">
-                            <img alt="" [src]="decode(message.sender?.userPhoto) || 'assets/default-avatar.png'" 
+                            <img alt="" [src]="decodeUser(message.sender?.userPhoto) || 'assets/default-avatar.png'" 
                                 [alt]="message.sender?.email">
                         </div>
                     </div>
@@ -195,25 +257,70 @@
         <!-- Message Input -->
         <div class="bg-base-100 p-4 border-t" *ngIf="selectedUser">
             <div class="flex gap-2 justify-center items-center">
-                <label class="btn btn-circle btn-ghost">
-                  <input type="file" class="hidden" >
-                  <i class="bi bi-paperclip"></i>
-                </label>
+                <div class="flex items-center gap-2">
+                    <input
+                      type="file"
+                      #fileInput
+                      (change)="onFileSelected($event)"
+                      class="hidden"
+                      accept="image/*,.pdf,.doc,.docx"
+                    />
+                    
+                    <button title="select document"
+                      type="button"
+                      (click)="fileInput.click()"
+                      class="btn btn-ghost btn-circle"
+                    >
+                      <i class="bi bi-paperclip"></i>
+                    </button>
+                  </div>
                 
                 <input type="text" [(ngModel)]="newMessage" 
+                      (keyup.enter)="sendMessage()"
                        class="input input-bordered flex-1 focus:outline-none focus:border-primary" 
-                       placeholder="Type a message...">
+                       placeholder="Type a message..."/>
             
-                  <i class="bi bi-send" (click)="sendMessage()"></i>
+                       <button 
+                       (click)="sendMessage()" 
+                       class="btn btn-circle btn-primary btn-sm flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                       [class.opacity-50]="!newMessage.trim() && !selectedFile"
+                       [disabled]="!newMessage.trim() && !selectedFile"
+                       title="Send Message">
+                       <i class="bi bi-send-fill"></i>
+                   </button>
               </div>
               
               <!-- File Preview -->
-              <div *ngIf="selectedFile" class="mt-2 flex items-center gap-2">
-                <span class="text-sm">{{selectedFile.name}}</span>
-                <button title="-" class="btn btn-ghost btn-xs" (click)="selectedFile = null">
-                  <i class="bi bi-times"></i>
-                </button>
+              <div *ngIf="selectedFile" class="mt-2 relative inline-block">
+                <div class="relative group">
+                  <div *ngIf="filePreview" class="max-w-xs">
+                    <img [src]="filePreview" class="max-h-32 rounded" alt="Preview" />
+                  </div>
+                  <div *ngIf="!filePreview" class="p-2 bg-gray-100 rounded">
+                    <i class="bi bi-file-earmark"></i>
+                    {{ selectedFile.name }}
+                  </div>
+                  <button title="-"
+                    (click)="removeSelectedFile()"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs"
+                  >
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
               </div>
             </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div *ngIf="isImageModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+        <div class="relative max-w-[90vw] max-h-[90vh]">
+            <img [src]="selectedImage" 
+                 class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" 
+                 alt="Full size image">
+            <button title="close" (click)="closeImageModal()" 
+                    class="absolute -top-4 -right-4 btn btn-circle btn-sm btn-error">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
     </div>
 </div>
